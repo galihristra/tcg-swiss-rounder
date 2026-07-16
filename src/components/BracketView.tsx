@@ -58,7 +58,7 @@ export default function BracketView({ rounds, roundLabels, playerMap, onReport }
   return (
     <div className="tk-bracket-scroll">
       <div className="tk-bracket" style={{ height: totalHeight + 24, width: totalWidth }}>
-        <svg width={totalWidth} height={totalHeight} style={{ position: "absolute", top: 24, left: 0 }}>
+        <svg className="tk-bracket-lines" width={totalWidth} height={totalHeight}>
           {lines}
         </svg>
         {rounds.map((round, r) => (
@@ -77,7 +77,7 @@ export default function BracketView({ rounds, roundLabels, playerMap, onReport }
                       onClick={() => canClick && pid && onReport(m.id, pid)}
                     >
                       <span>{nameOf(playerMap, pid)}</span>
-                      {isWinner && <span style={{ fontSize: 10 }}>W</span>}
+                      {isWinner && <span className="tk-bwin">W</span>}
                     </div>
                   );
                 })}

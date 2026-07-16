@@ -51,9 +51,9 @@ export default function PairingTicket({ index, p1, p2, match, onReport }: Pairin
           </button>
         </div>
         {!decided && (
-          <div style={{ display: "flex", gap: 12, marginTop: 6, alignItems: "center" }}>
+          <div className="tk-report">
             <GameToggle close={close} setClose={setClose} />
-            <button className="tk-btn ghost" style={{ padding: "3px 10px", fontSize: 11 }} onClick={() => report("draw")}>
+            <button className="tk-btn ghost tk-btn--sm" onClick={() => report("draw")}>
               Draw
             </button>
           </div>

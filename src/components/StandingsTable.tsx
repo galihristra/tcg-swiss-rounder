@@ -6,6 +6,7 @@ interface StandingsTableProps {
 
 export default function StandingsTable({ rows }: StandingsTableProps) {
   return (
+    <div className="tk-table-scroll">
     <table className="tk-standings">
       <thead>
         <tr>
@@ -30,5 +31,6 @@ export default function StandingsTable({ rows }: StandingsTableProps) {
         ))}
       </tbody>
     </table>
+    </div>
   );
 }

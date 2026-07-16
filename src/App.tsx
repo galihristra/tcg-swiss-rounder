@@ -135,8 +135,8 @@ export default function App() {
             </button>
           </div>
           {mode === "swiss" && (
-            <p style={{ fontSize: 12, color: "#8a8d98", marginTop: 14 }}>
-              Suggested length for {players.length} players: <b style={{ color: "#d6a93c" }}>{recommendedRounds} rounds</b>.
+            <p className="tk-suggest">
+              Suggested length for {players.length} players: <b className="tk-gold">{recommendedRounds} rounds</b>.
             </p>
           )}
         </div>
@@ -159,7 +159,7 @@ export default function App() {
                     {round === 0 ? "Start Round 1" : `Start Round ${round + 1}`}
                   </button>
                 ) : (
-                  <span style={{ fontSize: 12, color: "#8a8d98" }}>Report all results to continue</span>
+                  <span className="tk-hint">Report all results to continue</span>
                 )}
               </div>
 
@@ -191,10 +191,8 @@ export default function App() {
                 ))}
 
               {matches.length > 0 && (
-                <div style={{ marginTop: 18 }}>
-                  <h3 style={{ fontFamily: "'Barlow Condensed',sans-serif", textTransform: "uppercase", fontSize: 15, color: "#8a8d98" }}>
-                    Standings
-                  </h3>
+                <div className="tk-standings-block">
+                  <h3 className="tk-section-title">Standings</h3>
                   <StandingsTable rows={standings} />
                 </div>
               )}
@@ -208,14 +206,14 @@ export default function App() {
                   <button className="tk-btn" disabled={players.length < 2} onClick={genSingle}>
                     Generate Bracket
                   </button>
-                  <div className="tk-empty" style={{ marginTop: 12 }}>
+                  <div className="tk-empty tk-empty--spaced">
                     Seeded by roster order above (player 1 = top seed). Byes go to the top seeds if the field isn't a power
                     of two.
                   </div>
                 </>
               ) : (
                 <>
-                  <button className="tk-btn ghost" style={{ marginBottom: 14 }} onClick={genSingle}>
+                  <button className="tk-btn ghost tk-reseed" onClick={genSingle}>
                     Re-seed &amp; restart
                   </button>
                   <BracketView
@@ -236,18 +234,16 @@ export default function App() {
                   <button className="tk-btn" disabled={players.length < 2} onClick={genDouble}>
                     Generate Bracket
                   </button>
-                  <div className="tk-empty" style={{ marginTop: 12 }}>
+                  <div className="tk-empty tk-empty--spaced">
                     Lose in the winners' bracket and you drop to the losers' bracket. Lose twice and you're out.
                   </div>
                 </>
               ) : (
                 <>
-                  <button className="tk-btn ghost" style={{ marginBottom: 14 }} onClick={genDouble}>
+                  <button className="tk-btn ghost tk-reseed" onClick={genDouble}>
                     Re-seed &amp; restart
                   </button>
-                  <h3 style={{ fontFamily: "'Barlow Condensed',sans-serif", textTransform: "uppercase", fontSize: 14, color: "#8a8d98" }}>
-                    Winners' Bracket
-                  </h3>
+                  <h3 className="tk-section-title">Winners' Bracket</h3>
                   <BracketView
                     rounds={doubleBracket.wbRounds}
                     roundLabels={singleRoundLabels(doubleBracket.wbRounds.length)}
@@ -255,17 +251,13 @@ export default function App() {
                     onReport={reportDouble}
                   />
 
-                  <h3
-                    style={{ fontFamily: "'Barlow Condensed',sans-serif", textTransform: "uppercase", fontSize: 14, color: "#8a8d98", marginTop: 10 }}
-                  >
-                    Losers' Bracket
-                  </h3>
+                  <h3 className="tk-section-title">Losers' Bracket</h3>
                   <div className="tk-lbwrap">
                     {doubleBracket.lbRounds.map((lbRound, ri) => (
                       <div className="tk-lbcol" key={ri}>
                         <div className="tk-bcol-label">LB {ri + 1}</div>
                         {lbRound.matches.map((m) => (
-                          <div className="tk-bmatch" key={m.id} style={{ position: "static", marginBottom: 8 }}>
+                          <div className="tk-bmatch tk-bmatch--static" key={m.id}>
                             {SLOTS.map((slot) => {
                               const pid = m[slot];
                               const isWinner = !!m.winnerId && m.winnerId === pid;
@@ -277,7 +269,7 @@ export default function App() {
                                   onClick={() => canClick && pid && reportDouble(m.id, pid)}
                                 >
                                   <span>{nameOf(playerMap, pid)}</span>
-                                  {isWinner && <span style={{ fontSize: 10 }}>W</span>}
+                                  {isWinner && <span className="tk-bwin">W</span>}
                                 </div>
                               );
                             })}
@@ -287,11 +279,7 @@ export default function App() {
                     ))}
                   </div>
 
-                  <h3
-                    style={{ fontFamily: "'Barlow Condensed',sans-serif", textTransform: "uppercase", fontSize: 14, color: "#8a8d98", marginTop: 10 }}
-                  >
-                    Grand Final
-                  </h3>
+                  <h3 className="tk-section-title">Grand Final</h3>
                   <div className="tk-gf">
                     <div className="tk-bmatch">
                       {SLOTS.map((slot) => {
@@ -305,16 +293,14 @@ export default function App() {
                             onClick={() => canClick && pid && reportDouble("GF", pid)}
                           >
                             <span>{nameOf(playerMap, pid)}</span>
-                            {isWinner && <span style={{ fontSize: 10 }}>W</span>}
+                            {isWinner && <span className="tk-bwin">W</span>}
                           </div>
                         );
                       })}
                     </div>
                     {doubleBracket.grandFinalReset.active && (
                       <div className="tk-bmatch">
-                        <div style={{ fontSize: 10, color: "#d6a93c", padding: "5px 9px", borderBottom: "1px solid #2e313a" }}>
-                          BRACKET RESET
-                        </div>
+                        <div className="tk-reset-label">BRACKET RESET</div>
                         {SLOTS.map((slot) => {
                           const pid = doubleBracket.grandFinalReset[slot];
                           const isWinner = doubleBracket.grandFinalReset.winnerId === pid;
@@ -327,7 +313,7 @@ export default function App() {
                               onClick={() => canClick && pid && reportDouble("GF2", pid)}
                             >
                               <span>{nameOf(playerMap, pid)}</span>
-                              {isWinner && <span style={{ fontSize: 10 }}>W</span>}
+                              {isWinner && <span className="tk-bwin">W</span>}
                             </div>
                           );
                         })}
