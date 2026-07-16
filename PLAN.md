@@ -49,14 +49,29 @@ rules for sanctioned play) — flag it before then.
   handling mid-event (the engine already supports `player.dropped`).
 - Decklist submission if the format requires it (optional per event).
 
-### Phase 2 — Persistence
-- Decide: REST API against a real DB, or start with `localStorage` +
-  swap later? Given this needs to survive a organizer's browser refresh
-  mid-event at minimum, don't ship Phase 1 without at least local
-  persistence.
-- If a backend is in scope now: pick storage for events/players/matches,
-  and where auth lives (does this share a login with the Card System's
-  existing login, or is it separate?).
+### Phase 2 — Persistence ✅ (done)
+- **Supabase** (Postgres) as the backend; the Vite SPA talks to it directly
+  via `@supabase/supabase-js` (client in `src/lib/supabase.ts`, data access in
+  `src/lib/eventStore.ts`). Schema in `supabase/schema.sql`.
+- One `events` table; each event stored as a single JSONB `state` blob
+  (players, matches, round, brackets, …). Active event auto-loads on startup
+  (created if none), debounced auto-save on every change → survives refresh.
+- Event naming; "New event" archives the current event (`status = 'archived'`)
+  and starts a fresh one. Read-only "Past events" view lists archives with
+  their final standings.
+- **Auth: open for now** — permissive RLS, no login. Anyone with the URL can
+  edit. Add real auth before promoting the app widely (ties into Phase 3
+  "who can report results").
+
+TODO / follow-ups for Phase 2:
+- [ ] **Archive view for elimination events.** The "Past events" detail shows
+  Swiss *standings*, which is meaningless for Single/Double Elim events (their
+  result lives in the bracket, not match points — an archived elim event shows
+  everyone at 0). Show the final bracket / champion for elim-format archives.
+- [ ] Consider formalizing "an event has one chosen format" instead of the
+  free tab-switch, so archives are unambiguous.
+- [ ] Last-write-wins only; no multi-device conflict handling (fine for a
+  single organizer — revisit if Phase 3 adds concurrent editors).
 
 ### Phase 3 — Live/shared views
 - Player-facing "what table am I at" / standings view that updates
