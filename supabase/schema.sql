@@ -60,3 +60,58 @@ create policy "admin_delete" on public.events
 
 create index if not exists events_status_updated_idx
   on public.events (status, updated_at desc);
+
+-- ============================================================
+-- Event photos — photo gallery for archived events
+-- ============================================================
+
+-- SQL Editor runs as the postgres owner role, bypassing storage.buckets RLS,
+-- so this creates the bucket without a manual dashboard step. If it's ever
+-- rejected by a given project's permissions, fall back to:
+-- Dashboard → Storage → New bucket → name "event-photos" → Public bucket: ON.
+insert into storage.buckets (id, name, public, file_size_limit)
+values ('event-photos', 'event-photos', true, 10485760) -- 10MB/object safety cap
+on conflict (id) do nothing;
+
+drop policy if exists "event_photos_public_read" on storage.objects;
+create policy "event_photos_public_read" on storage.objects
+  for select to anon, authenticated
+  using (bucket_id = 'event-photos');
+
+drop policy if exists "event_photos_admin_insert" on storage.objects;
+create policy "event_photos_admin_insert" on storage.objects
+  for insert to authenticated
+  with check (bucket_id = 'event-photos');
+
+drop policy if exists "event_photos_admin_delete" on storage.objects;
+create policy "event_photos_admin_delete" on storage.objects
+  for delete to authenticated
+  using (bucket_id = 'event-photos');
+-- No update policy: "replacing" a photo is delete + re-upload under a new path.
+
+create table if not exists public.event_photos (
+  id           uuid primary key default gen_random_uuid(),
+  event_id     uuid not null references public.events(id) on delete cascade,
+  storage_path text not null,
+  created_at   timestamptz not null default now()
+);
+
+alter table public.event_photos enable row level security;
+
+drop policy if exists "public_read" on public.event_photos;
+create policy "public_read" on public.event_photos
+  for select to anon, authenticated
+  using (true);
+
+drop policy if exists "admin_insert" on public.event_photos;
+create policy "admin_insert" on public.event_photos
+  for insert to authenticated
+  with check (true);
+
+drop policy if exists "admin_delete" on public.event_photos;
+create policy "admin_delete" on public.event_photos
+  for delete to authenticated
+  using (true);
+
+create index if not exists event_photos_event_id_idx
+  on public.event_photos (event_id, created_at);

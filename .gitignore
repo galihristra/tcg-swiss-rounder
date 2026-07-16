@@ -3,6 +3,9 @@ dist
 .DS_Store
 *.local
 
+# TypeScript incremental build cache
+*.tsbuildinfo
+
 # Editor / tooling
 .claude/
 

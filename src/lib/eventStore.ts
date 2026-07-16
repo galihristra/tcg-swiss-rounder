@@ -33,7 +33,17 @@ export interface ArchivedEventSummary {
   state: EventState;
 }
 
+export interface EventPhoto {
+  id: string;
+  eventId: string;
+  storagePath: string;
+  url: string;
+  createdAt: string;
+}
+
 const TABLE = 'events';
+const PHOTOS_TABLE = 'event_photos';
+const PHOTOS_BUCKET = 'event-photos';
 
 export function emptyState(): EventState {
   return {
@@ -123,4 +133,78 @@ export async function listArchivedEvents(): Promise<ArchivedEventSummary[]> {
     updated_at: r.updated_at,
     state: normalizeState(r.state),
   }));
+}
+
+function photoPublicUrl(path: string): string {
+  return supabase.storage.from(PHOTOS_BUCKET).getPublicUrl(path).data.publicUrl;
+}
+
+export async function listEventPhotos(eventId: string): Promise<EventPhoto[]> {
+  const { data, error } = await supabase
+    .from(PHOTOS_TABLE)
+    .select('id, event_id, storage_path, created_at')
+    .eq('event_id', eventId)
+    .order('created_at', { ascending: true });
+  if (error) throw error;
+  return (data ?? []).map((r) => ({
+    id: r.id,
+    eventId: r.event_id,
+    storagePath: r.storage_path,
+    url: photoPublicUrl(r.storage_path),
+    createdAt: r.created_at,
+  }));
+}
+
+/** Upload an already-compressed JPEG blob and record it against the event. */
+export async function uploadEventPhoto(
+  eventId: string,
+  blob: Blob,
+): Promise<EventPhoto> {
+  const path = `${eventId}/${Date.now()}-${Math.random().toString(36).slice(2, 8)}.jpg`;
+
+  const { error: uploadError } = await supabase.storage
+    .from(PHOTOS_BUCKET)
+    .upload(path, blob, { contentType: 'image/jpeg', upsert: false });
+  if (uploadError) throw uploadError;
+
+  const { data, error: insertError } = await supabase
+    .from(PHOTOS_TABLE)
+    .insert({ event_id: eventId, storage_path: path })
+    .select('id, event_id, storage_path, created_at')
+    .single();
+  if (insertError) {
+    // Row insert failed after the object landed in storage — best-effort
+    // cleanup so we don't leak an orphan toward the storage quota.
+    await supabase.storage
+      .from(PHOTOS_BUCKET)
+      .remove([path])
+      .catch(() => {});
+    throw insertError;
+  }
+
+  return {
+    id: data.id,
+    eventId: data.event_id,
+    storagePath: data.storage_path,
+    url: photoPublicUrl(data.storage_path),
+    createdAt: data.created_at,
+  };
+}
+
+export async function deleteEventPhoto(
+  photo: Pick<EventPhoto, 'id' | 'storagePath'>,
+): Promise<void> {
+  const { error: dbError } = await supabase
+    .from(PHOTOS_TABLE)
+    .delete()
+    .eq('id', photo.id);
+  if (dbError) throw dbError;
+
+  // Row is already gone (source of truth for what's visible); a failed
+  // storage cleanup just leaves a harmless orphaned object.
+  const { error: storageError } = await supabase.storage
+    .from(PHOTOS_BUCKET)
+    .remove([photo.storagePath]);
+  if (storageError)
+    console.error('Failed to remove storage object', storageError);
 }
