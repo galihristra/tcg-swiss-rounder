@@ -31,9 +31,27 @@ Supabase project and two env vars.
 **Deploy (Vercel):** import the repo and set the same two env vars in the
 Vercel project settings.
 
-> Auth is intentionally **open** right now (permissive RLS) — anyone with the
-> URL can edit. See [PLAN.md](./PLAN.md) for the Phase 2 TODOs, including
-> archive support for elimination-format events.
+See [PLAN.md](./PLAN.md) for the Phase 2 TODOs, including archive support for
+elimination-format events.
+
+## Organizer sign-in (Supabase Auth)
+
+Everyone can view the current event; only a signed-in organizer can edit it
+(report results, start rounds, manage the roster, archive events). There's
+exactly **one shared admin account**, created directly in the Supabase
+dashboard — there's no self-serve sign-up.
+
+1. In the Supabase dashboard: **Authentication → Users → Add user**. Enter
+   the organizer's email + a password, and check **Auto Confirm User**.
+2. **Authentication → Providers → Email**: turn off **Allow new users to
+   sign up**. This is what makes it a *single* admin account — no one else
+   can ever create one, regardless of the (public) publishable key being in
+   the browser bundle.
+3. In the app, click **Organizer sign in** (top right) and sign in with that
+   email + password.
+
+Protection is enforced in Postgres (RLS), not just hidden in the UI — see
+`supabase/schema.sql`.
 
 ## Structure
 
@@ -46,10 +64,12 @@ src/
     PairingTicket.tsx
     StandingsTable.tsx
     BracketView.tsx
+    AdminLogin.tsx         # organizer sign-in popup + signed-in badge
   lib/
     supabase.ts           # Supabase client (reads env vars)
     eventStore.ts         # load / save / archive events + persisted state types
-  App.tsx                 # wires engine to UI + persistence
+    auth.ts               # sign in / out, session helpers
+  App.tsx                 # wires engine to UI + persistence + auth-gated editing
   styles/tokens.css
 supabase/
   schema.sql              # run once to create the events table

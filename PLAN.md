@@ -88,10 +88,15 @@ rounds, edit the roster, etc. Phase 3 splits this into two layers:
 - **Everyone else (participant):** no login, sees the same live event
   read-only — roster, current pairings, standings, brackets — but every
   write control is hidden/disabled.
-- **Auth:** Supabase Auth, **magic link**, **one shared admin account**.
+- **Auth:** Supabase Auth, **email + password**, **one shared admin account**.
   Public sign-ups disabled in the Supabase dashboard and exactly one user
-  (the organizer's email) created manually, so "authenticated" and "the
-  organizer" are the same thing — no admin table needed.
+  (the organizer's email + a password) created manually, so "authenticated"
+  and "the organizer" are the same thing — no admin table needed. (Originally
+  tried magic link, but Supabase's free-tier auth-email rate limit — 2 emails/
+  hour — made it impractical; password auth sends no email at sign-in, so the
+  limit doesn't apply, and there's no redirect-URL config needed either.)
+- Sign-in is a small popup (email + password + submit) opened from an
+  "Organizer sign in" button in the header; `src/components/AdminLogin.tsx`.
 - **Enforcement is in Postgres RLS**, not just the UI: `select` stays open
   to everyone; `insert`/`update`/`delete` require `auth.role() =
 'authenticated'`. A determined participant poking the API directly still

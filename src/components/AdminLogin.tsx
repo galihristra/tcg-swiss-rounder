@@ -1,7 +1,7 @@
 import { useState } from 'react';
-import { sendMagicLink, signOut } from '../lib/auth';
+import { signInWithPassword, signOut } from '../lib/auth';
 
-type Status = 'idle' | 'sending' | 'sent' | 'error';
+type Status = 'idle' | 'signing-in' | 'error';
 
 interface AdminLoginProps {
   isAdmin: boolean;
@@ -10,16 +10,23 @@ interface AdminLoginProps {
 export default function AdminLogin({ isAdmin }: AdminLoginProps) {
   const [open, setOpen] = useState(false);
   const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const [status, setStatus] = useState<Status>('idle');
   const [errorMsg, setErrorMsg] = useState('');
 
+  const close = () => {
+    setOpen(false);
+    setPassword('');
+    setStatus('idle');
+    setErrorMsg('');
+  };
+
   const submit = async () => {
-    const trimmed = email.trim();
-    if (!trimmed) return;
-    setStatus('sending');
+    if (!email.trim() || !password) return;
+    setStatus('signing-in');
     try {
-      await sendMagicLink(trimmed);
-      setStatus('sent');
+      await signInWithPassword(email.trim(), password);
+      // isAdmin flips via the parent's auth-state listener once this resolves.
     } catch (e) {
       setStatus('error');
       setErrorMsg(e instanceof Error ? e.message : String(e));
@@ -30,50 +37,56 @@ export default function AdminLogin({ isAdmin }: AdminLoginProps) {
     return (
       <div className="tk-admin-badge">
         <span className="tk-hint">Signed in as organizer</span>
-        <button className="tk-btn ghost" onClick={() => signOut()}>
+        <button className="tk-btn ghost tk-btn--sm" onClick={() => signOut()}>
           Sign out
         </button>
       </div>
     );
   }
 
-  if (!open) {
-    return (
-      <button className="tk-btn ghost" onClick={() => setOpen(true)}>
+  return (
+    <>
+      <button className="tk-btn ghost tk-btn--sm" onClick={() => setOpen(true)}>
         Organizer sign in
       </button>
-    );
-  }
-
-  if (status === 'sent') {
-    return (
-      <span className="tk-hint">Check your email for a sign-in link.</span>
-    );
-  }
-
-  return (
-    <div className="tk-admin-login">
-      <input
-        className="tk-admin-email"
-        type="email"
-        placeholder="organizer@example.com"
-        value={email}
-        onChange={(e) => setEmail(e.target.value)}
-        onKeyDown={(e) => e.key === 'Enter' && submit()}
-      />
-      <button
-        className="tk-btn"
-        disabled={status === 'sending'}
-        onClick={submit}
-      >
-        {status === 'sending' ? 'Sending…' : 'Send link'}
-      </button>
-      <button className="tk-btn ghost" onClick={() => setOpen(false)}>
-        Cancel
-      </button>
-      {status === 'error' && (
-        <span className="tk-hint tk-error">{errorMsg}</span>
+      {open && (
+        <div className="tk-modal-backdrop" onClick={close}>
+          <div className="tk-modal" onClick={(e) => e.stopPropagation()}>
+            <h3 className="tk-section-title">Organizer sign in</h3>
+            <form
+              onSubmit={(e) => {
+                e.preventDefault();
+                submit();
+              }}
+            >
+              <input
+                className="tk-modal-input"
+                type="email"
+                placeholder="Email"
+                autoFocus
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+              />
+              <input
+                className="tk-modal-input"
+                type="password"
+                placeholder="Password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+              />
+              {status === 'error' && <div className="tk-hint tk-error">{errorMsg}</div>}
+              <div className="tk-modal-actions">
+                <button type="button" className="tk-btn ghost tk-btn--sm" onClick={close}>
+                  Cancel
+                </button>
+                <button type="submit" className="tk-btn tk-btn--sm" disabled={status === 'signing-in'}>
+                  {status === 'signing-in' ? 'Signing in…' : 'Sign in'}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
       )}
-    </div>
+    </>
   );
 }
