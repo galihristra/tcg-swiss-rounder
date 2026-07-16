@@ -59,14 +59,22 @@ export default function PairingTicket({ index, p1, p2, match, onReport }: Pairin
           </div>
         )}
       </div>
-      <div>
-        {decided && match.result === "p1" && (
+      <div className="tk-result">
+        {match.result === "p1" && (
           <span className="tk-stamp win">{p1.name} won {match.p1Games}–{match.p2Games}</span>
         )}
-        {decided && match.result === "p2" && (
+        {match.result === "p2" && (
           <span className="tk-stamp win">{p2.name} won {match.p2Games}–{match.p1Games}</span>
         )}
-        {decided && match.result === "draw" && <span className="tk-stamp draw">Draw</span>}
+        {match.result === "draw" && <span className="tk-stamp draw">Draw</span>}
+        {decided && (
+          <button
+            className="tk-btn ghost tk-btn--sm"
+            onClick={() => onReport({ result: null, p1Games: 0, p2Games: 0 })}
+          >
+            Edit
+          </button>
+        )}
       </div>
     </div>
   );

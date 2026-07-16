@@ -83,6 +83,10 @@ html, body { margin:0; padding:0; background:#121316; }
 .tk-rounds-setting input{ width:52px; background:var(--card); border:1px solid var(--border); border-radius:6px; color:var(--text); padding:5px 8px; font-size:13px; font-family:'JetBrains Mono',monospace; }
 .tk-rounds-setting input:disabled{ opacity:0.5; cursor:not-allowed; }
 .tk-champion{ font-size:18px; margin:14px 0; }
+.tk-result{ display:flex; align-items:center; gap:10px; }
+.tk-x:disabled{ opacity:0.35; cursor:not-allowed; }
+.tk-x:disabled:hover{ color:var(--muted); }
+.tk-add input:disabled{ opacity:0.5; cursor:not-allowed; }
 
 /* ============ Responsive: tablet & mobile ============ */
 /* Single-column below ~800px covers portrait tablets and phones (see .tk-layout above). */

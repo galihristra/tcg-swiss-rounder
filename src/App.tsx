@@ -45,6 +45,7 @@ export default function App() {
   const recommendedRounds = Math.max(3, Math.ceil(Math.log2(Math.max(players.length, 2))));
   const roundCount = parseInt(roundsInput, 10);
   const roundsValid = roundCount >= 3;
+  const rosterLocked = round > 0;
 
   const addPlayer = () => {
     const name = newName.trim();
@@ -116,7 +117,7 @@ export default function App() {
                 value={p.name}
                 onChange={(e) => setPlayers((ps) => ps.map((x) => (x.id === p.id ? { ...x, name: e.target.value } : x)))}
               />
-              <button className="tk-x" onClick={() => removePlayer(p.id)}>
+              <button className="tk-x" disabled={rosterLocked} onClick={() => removePlayer(p.id)}>
                 ×
               </button>
             </div>
@@ -125,13 +126,15 @@ export default function App() {
             <input
               placeholder="Add player…"
               value={newName}
+              disabled={rosterLocked}
               onChange={(e) => setNewName(e.target.value)}
               onKeyDown={(e) => e.key === "Enter" && addPlayer()}
             />
-            <button className="tk-btn" onClick={addPlayer}>
+            <button className="tk-btn" disabled={rosterLocked} onClick={addPlayer}>
               Add
             </button>
           </div>
+          {rosterLocked && <p className="tk-suggest">Roster is locked while the event is running.</p>}
           {mode === "swiss" && (
             <div className="tk-rounds-setting">
               <label htmlFor="tk-round-count">Rounds</label>
