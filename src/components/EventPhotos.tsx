@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import {
   deleteEventPhoto,
   listEventPhotos,
@@ -18,13 +18,36 @@ export default function EventPhotos({ eventId, isAdmin }: EventPhotosProps) {
   const [uploadTotal, setUploadTotal] = useState(0);
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const [errors, setErrors] = useState<string[]>([]);
+  const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
 
   useEffect(() => {
     setPhotos([]);
+    setLightboxIndex(null);
     listEventPhotos(eventId)
       .then(setPhotos)
       .catch((e) => console.error('Failed to list photos', e));
   }, [eventId]);
+
+  const closeLightbox = useCallback(() => setLightboxIndex(null), []);
+  const showPrev = useCallback(
+    () => setLightboxIndex((i) => (i === null ? i : (i - 1 + photos.length) % photos.length)),
+    [photos.length],
+  );
+  const showNext = useCallback(
+    () => setLightboxIndex((i) => (i === null ? i : (i + 1) % photos.length)),
+    [photos.length],
+  );
+
+  useEffect(() => {
+    if (lightboxIndex === null) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') closeLightbox();
+      else if (e.key === 'ArrowLeft') showPrev();
+      else if (e.key === 'ArrowRight') showNext();
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [lightboxIndex, closeLightbox, showPrev, showNext]);
 
   const handleFiles = async (fileList: FileList | null) => {
     if (!fileList || fileList.length === 0) return;
@@ -54,14 +77,13 @@ export default function EventPhotos({ eventId, isAdmin }: EventPhotosProps) {
       await deleteEventPhoto(photo);
       setPhotos((prev) => prev.filter((p) => p.id !== photo.id));
     } catch (e) {
-      setErrors((prev) => [
-        ...prev,
-        e instanceof Error ? e.message : String(e),
-      ]);
+      setErrors((prev) => [...prev, e instanceof Error ? e.message : String(e)]);
     } finally {
       setDeletingId(null);
     }
   };
+
+  const activePhoto = lightboxIndex === null ? null : photos[lightboxIndex];
 
   return (
     <div>
@@ -97,14 +119,20 @@ export default function EventPhotos({ eventId, isAdmin }: EventPhotosProps) {
         )
       ) : (
         <div className="tk-photo-grid">
-          {photos.map((photo) => (
+          {photos.map((photo, i) => (
             <div className="tk-photo-item" key={photo.id}>
-              <img
-                src={photo.url}
-                alt=""
-                loading="lazy"
-                className="tk-photo-thumb"
-              />
+              <button
+                className="tk-photo-open"
+                onClick={() => setLightboxIndex(i)}
+                aria-label="View photo"
+              >
+                <img
+                  src={photo.url}
+                  alt=""
+                  loading="lazy"
+                  className="tk-photo-thumb"
+                />
+              </button>
               {isAdmin && (
                 <button
                   className="tk-photo-delete"
@@ -117,6 +145,53 @@ export default function EventPhotos({ eventId, isAdmin }: EventPhotosProps) {
               )}
             </div>
           ))}
+        </div>
+      )}
+
+      {activePhoto && (
+        <div className="tk-lightbox-backdrop" onClick={closeLightbox}>
+          <button
+            className="tk-lightbox-close"
+            onClick={closeLightbox}
+            aria-label="Close"
+          >
+            ×
+          </button>
+          {photos.length > 1 && (
+            <button
+              className="tk-lightbox-nav tk-lightbox-prev"
+              onClick={(e) => {
+                e.stopPropagation();
+                showPrev();
+              }}
+              aria-label="Previous photo"
+            >
+              ‹
+            </button>
+          )}
+          <img
+            className="tk-lightbox-img"
+            src={activePhoto.url}
+            alt=""
+            onClick={(e) => e.stopPropagation()}
+          />
+          {photos.length > 1 && (
+            <button
+              className="tk-lightbox-nav tk-lightbox-next"
+              onClick={(e) => {
+                e.stopPropagation();
+                showNext();
+              }}
+              aria-label="Next photo"
+            >
+              ›
+            </button>
+          )}
+          {photos.length > 1 && (
+            <div className="tk-lightbox-counter">
+              {lightboxIndex! + 1} / {photos.length}
+            </div>
+          )}
         </div>
       )}
     </div>
