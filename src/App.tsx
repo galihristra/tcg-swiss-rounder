@@ -323,7 +323,7 @@ export default function App() {
           >
             Past events
           </button>
-          <AdminLogin isAdmin={isAdmin} />
+          <AdminLogin isAdmin={isAdmin} userSession={session} />
         </div>
       </div>
 

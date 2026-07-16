@@ -1,13 +1,15 @@
 import { useState } from 'react';
 import { signInWithPassword, signOut } from '../lib/auth';
+import { Session } from '@supabase/supabase-js';
 
 type Status = 'idle' | 'signing-in' | 'error';
 
 interface AdminLoginProps {
   isAdmin: boolean;
+  userSession: Session | null;
 }
 
-export default function AdminLogin({ isAdmin }: AdminLoginProps) {
+export default function AdminLogin({ isAdmin, userSession }: AdminLoginProps) {
   const [open, setOpen] = useState(false);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -36,8 +38,10 @@ export default function AdminLogin({ isAdmin }: AdminLoginProps) {
   if (isAdmin) {
     return (
       <div className="tk-admin-badge">
-        <span className="tk-hint">Signed in as organizer</span>
-        <button className="tk-btn ghost tk-btn--sm" onClick={() => signOut()}>
+        <span className="tk-hint">
+          Signed in as <strong>{userSession?.user.email}</strong>
+        </span>
+        <button className="tk-btn ghost" onClick={() => signOut()}>
           Sign out
         </button>
       </div>
@@ -46,7 +50,7 @@ export default function AdminLogin({ isAdmin }: AdminLoginProps) {
 
   return (
     <>
-      <button className="tk-btn ghost tk-btn--sm" onClick={() => setOpen(true)}>
+      <button className="tk-btn ghost" onClick={() => setOpen(true)}>
         Organizer sign in
       </button>
       {open && (
@@ -74,12 +78,18 @@ export default function AdminLogin({ isAdmin }: AdminLoginProps) {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
               />
-              {status === 'error' && <div className="tk-hint tk-error">{errorMsg}</div>}
+              {status === 'error' && (
+                <div className="tk-hint tk-error">{errorMsg}</div>
+              )}
               <div className="tk-modal-actions">
-                <button type="button" className="tk-btn ghost tk-btn--sm" onClick={close}>
+                <button type="button" className="tk-btn ghost" onClick={close}>
                   Cancel
                 </button>
-                <button type="submit" className="tk-btn tk-btn--sm" disabled={status === 'signing-in'}>
+                <button
+                  type="submit"
+                  className="tk-btn"
+                  disabled={status === 'signing-in'}
+                >
                   {status === 'signing-in' ? 'Signing in…' : 'Sign in'}
                 </button>
               </div>
