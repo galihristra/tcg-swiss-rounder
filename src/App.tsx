@@ -219,7 +219,7 @@ export default function App() {
               </button>
             ))}
           </div>
-          <button className={`tk-btn ghost tk-btn--sm ${view === "archive" ? "active" : ""}`} onClick={openArchive}>
+          <button className={`tk-btn ghost ${view === "archive" ? "active" : ""}`} onClick={openArchive}>
             Past events
           </button>
           <AdminLogin isAdmin={isAdmin} />

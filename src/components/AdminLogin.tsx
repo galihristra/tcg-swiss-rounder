@@ -30,7 +30,7 @@ export default function AdminLogin({ isAdmin }: AdminLoginProps) {
     return (
       <div className="tk-admin-badge">
         <span className="tk-hint">Signed in as organizer</span>
-        <button className="tk-btn ghost tk-btn--sm" onClick={() => signOut()}>
+        <button className="tk-btn ghost" onClick={() => signOut()}>
           Sign out
         </button>
       </div>
@@ -39,7 +39,7 @@ export default function AdminLogin({ isAdmin }: AdminLoginProps) {
 
   if (!open) {
     return (
-      <button className="tk-btn ghost tk-btn--sm" onClick={() => setOpen(true)}>
+      <button className="tk-btn ghost" onClick={() => setOpen(true)}>
         Organizer sign in
       </button>
     );
@@ -59,10 +59,10 @@ export default function AdminLogin({ isAdmin }: AdminLoginProps) {
         onChange={(e) => setEmail(e.target.value)}
         onKeyDown={(e) => e.key === "Enter" && submit()}
       />
-      <button className="tk-btn tk-btn--sm" disabled={status === "sending"} onClick={submit}>
+      <button className="tk-btn" disabled={status === "sending"} onClick={submit}>
         {status === "sending" ? "Sending…" : "Send link"}
       </button>
-      <button className="tk-btn ghost tk-btn--sm" onClick={() => setOpen(false)}>
+      <button className="tk-btn ghost" onClick={() => setOpen(false)}>
         Cancel
       </button>
       {status === "error" && <span className="tk-hint tk-error">{errorMsg}</span>}
