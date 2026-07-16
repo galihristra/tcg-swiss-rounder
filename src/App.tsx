@@ -35,7 +35,7 @@ export default function App() {
 
   const [matches, setMatches] = useState<SwissMatch[]>([]);
   const [round, setRound] = useState(0);
-  const [roundCount, setRoundCount] = useState(3);
+  const [roundsInput, setRoundsInput] = useState("3");
   const [eventFinished, setEventFinished] = useState(false);
 
   const [singleBracket, setSingleBracket] = useState<SingleEliminationBracket | null>(null);
@@ -43,6 +43,8 @@ export default function App() {
 
   const playerMap = useMemo(() => Object.fromEntries(players.map((p) => [p.id, p])), [players]);
   const recommendedRounds = Math.max(3, Math.ceil(Math.log2(Math.max(players.length, 2))));
+  const roundCount = parseInt(roundsInput, 10);
+  const roundsValid = roundCount >= 3;
 
   const addPlayer = () => {
     const name = newName.trim();
@@ -66,6 +68,7 @@ export default function App() {
 
   const finishEvent = () => setEventFinished(true);
   const resetEvent = () => {
+    setPlayers([]);
     setMatches([]);
     setRound(0);
     setEventFinished(false);
@@ -135,15 +138,12 @@ export default function App() {
               <input
                 id="tk-round-count"
                 type="number"
-                min={1}
-                value={roundCount}
+                min={3}
+                value={roundsInput}
                 disabled={round > 0 || eventFinished}
-                onChange={(e) => {
-                  const v = parseInt(e.target.value, 10);
-                  if (!Number.isNaN(v) && v >= 1) setRoundCount(v);
-                }}
+                onChange={(e) => setRoundsInput(e.target.value)}
               />
-              <span className="tk-hint">suggested {recommendedRounds}</span>
+              <span className="tk-hint">{roundsValid ? `suggested ${recommendedRounds}` : "min 3 rounds"}</span>
             </div>
           )}
         </div>
@@ -180,7 +180,7 @@ export default function App() {
                     {(() => {
                       if (round === 0)
                         return (
-                          <button className="tk-btn" disabled={players.length < 2} onClick={startRound}>
+                          <button className="tk-btn" disabled={players.length < 2 || !roundsValid} onClick={startRound}>
                             Start Round 1
                           </button>
                         );

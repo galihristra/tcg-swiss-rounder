@@ -13,6 +13,7 @@ export default function StandingsTable({ rows }: StandingsTableProps) {
           <th>#</th>
           <th>Player</th>
           <th>Pts</th>
+          <th>W-D-L</th>
           <th>OMW%</th>
           <th>GW%</th>
           <th>OGW%</th>
@@ -24,6 +25,7 @@ export default function StandingsTable({ rows }: StandingsTableProps) {
             <td className="tk-num">{i + 1}</td>
             <td>{r.name}</td>
             <td className="tk-num">{r.points}</td>
+            <td className="tk-num">{r.wins}-{r.draws}-{r.losses}</td>
             <td className="tk-num">{(r.omw * 100).toFixed(1)}</td>
             <td className="tk-num">{(r.gw * 100).toFixed(1)}</td>
             <td className="tk-num">{(r.ogw * 100).toFixed(1)}</td>

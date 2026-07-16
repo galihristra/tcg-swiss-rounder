@@ -27,6 +27,9 @@ export interface StandingRow {
   name: string;
   points: number;
   matchesPlayed: number;
+  wins: number;
+  draws: number;
+  losses: number;
   mw: number;
   gw: number;
   omw: number;
@@ -127,6 +130,9 @@ const MIN_PCT = 1 / 3;
 interface PlayerStat {
   points: number;
   matchesPlayed: number;
+  wins: number;
+  draws: number;
+  losses: number;
   gamesWon: number;
   gamesPlayed: number;
   opponents: string[];
@@ -135,13 +141,13 @@ interface PlayerStat {
 function computeStandings(players: Player[], matches: SwissMatch[]): StandingRow[] {
   const stats: Record<string, PlayerStat> = {};
   players.forEach((p) => {
-    stats[p.id] = { points: 0, matchesPlayed: 0, gamesWon: 0, gamesPlayed: 0, opponents: [] };
+    stats[p.id] = { points: 0, matchesPlayed: 0, wins: 0, draws: 0, losses: 0, gamesWon: 0, gamesPlayed: 0, opponents: [] };
   });
 
   matches.forEach((m) => {
     if (m.isBye) {
       const s = stats[m.p1Id];
-      if (s) { s.points += MATCH_POINTS.win; s.matchesPlayed += 1; }
+      if (s) { s.points += MATCH_POINTS.win; s.matchesPlayed += 1; s.wins += 1; }
       return;
     }
     const { p2Id } = m;
@@ -153,9 +159,9 @@ function computeStandings(players: Player[], matches: SwissMatch[]): StandingRow
     s1.gamesWon += m.p1Games || 0; s2.gamesWon += m.p2Games || 0;
     const totalGames = (m.p1Games || 0) + (m.p2Games || 0);
     s1.gamesPlayed += totalGames; s2.gamesPlayed += totalGames;
-    if (m.result === "p1") s1.points += MATCH_POINTS.win;
-    else if (m.result === "p2") s2.points += MATCH_POINTS.win;
-    else { s1.points += MATCH_POINTS.draw; s2.points += MATCH_POINTS.draw; }
+    if (m.result === "p1") { s1.points += MATCH_POINTS.win; s1.wins += 1; s2.losses += 1; }
+    else if (m.result === "p2") { s2.points += MATCH_POINTS.win; s2.wins += 1; s1.losses += 1; }
+    else { s1.points += MATCH_POINTS.draw; s2.points += MATCH_POINTS.draw; s1.draws += 1; s2.draws += 1; }
   });
 
   const mw = (id: string): number => {
@@ -174,7 +180,7 @@ function computeStandings(players: Player[], matches: SwissMatch[]): StandingRow
     const opp = s.opponents;
     const omw = opp.length ? opp.reduce((sum, oid) => sum + mw(oid), 0) / opp.length : MIN_PCT;
     const ogw = opp.length ? opp.reduce((sum, oid) => sum + gw(oid), 0) / opp.length : MIN_PCT;
-    return { id: p.id, name: p.name, points: s.points, matchesPlayed: s.matchesPlayed, mw: mw(p.id), gw: gw(p.id), omw, ogw };
+    return { id: p.id, name: p.name, points: s.points, matchesPlayed: s.matchesPlayed, wins: s.wins, draws: s.draws, losses: s.losses, mw: mw(p.id), gw: gw(p.id), omw, ogw };
   });
 
   rows.sort((a, b) => b.points - a.points || b.omw - a.omw || b.gw - a.gw || b.ogw - a.ogw);
