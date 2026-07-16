@@ -1,5 +1,5 @@
-import type { Session } from "@supabase/supabase-js";
-import { supabase } from "./supabase";
+import type { Session } from '@supabase/supabase-js';
+import { supabase } from './supabase';
 
 export async function sendMagicLink(email: string): Promise<void> {
   const { error } = await supabase.auth.signInWithOtp({
@@ -21,7 +21,11 @@ export async function getSession(): Promise<Session | null> {
 }
 
 /** Returns an unsubscribe function. */
-export function onAuthStateChange(callback: (session: Session | null) => void): () => void {
-  const { data } = supabase.auth.onAuthStateChange((_event, session) => callback(session));
+export function onAuthStateChange(
+  callback: (session: Session | null) => void,
+): () => void {
+  const { data } = supabase.auth.onAuthStateChange((_event, session) =>
+    callback(session),
+  );
   return () => data.subscription.unsubscribe();
 }

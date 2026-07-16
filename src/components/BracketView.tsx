@@ -1,5 +1,5 @@
-import { useMemo, type ReactElement } from "react";
-import type { Player } from "../engine/tournament";
+import { useMemo, type ReactElement } from 'react';
+import type { Player } from '../engine/tournament';
 
 /** The subset of a bracket match this view needs to render a slot. */
 export interface BracketMatch {
@@ -9,8 +9,11 @@ export interface BracketMatch {
   winnerId: string | null;
 }
 
-export function nameOf(playerMap: Record<string, Player>, id: string | null | undefined): string {
-  if (!id) return "—";
+export function nameOf(
+  playerMap: Record<string, Player>,
+  id: string | null | undefined,
+): string {
+  if (!id) return '—';
   return playerMap[id]?.name || id;
 }
 
@@ -22,10 +25,17 @@ interface BracketViewProps {
   readOnly?: boolean;
 }
 
-const SLOTS = ["p1Id", "p2Id"] as const;
+const SLOTS = ['p1Id', 'p2Id'] as const;
 
-export default function BracketView({ rounds, roundLabels, playerMap, onReport, readOnly }: BracketViewProps) {
-  const matchH = 46, gapUnit = 62;
+export default function BracketView({
+  rounds,
+  roundLabels,
+  playerMap,
+  onReport,
+  readOnly,
+}: BracketViewProps) {
+  const matchH = 46,
+    gapUnit = 62;
   const n0 = rounds[0].length;
 
   const centers = useMemo(() => {
@@ -33,7 +43,8 @@ export default function BracketView({ rounds, roundLabels, playerMap, onReport, 
     const all: number[][] = [prev];
     for (let r = 1; r < rounds.length; r++) {
       const cur: number[] = [];
-      for (let i = 0; i < prev.length / 2; i++) cur.push((prev[2 * i] + prev[2 * i + 1]) / 2);
+      for (let i = 0; i < prev.length / 2; i++)
+        cur.push((prev[2 * i] + prev[2 * i + 1]) / 2);
       all.push(cur);
       prev = cur;
     }
@@ -47,34 +58,56 @@ export default function BracketView({ rounds, roundLabels, playerMap, onReport, 
   const lines: ReactElement[] = [];
   for (let r = 0; r < rounds.length - 1; r++) {
     rounds[r].forEach((_m, i) => {
-      const x1 = r * colW + 180, y1 = centers[r][i];
-      const x2 = (r + 1) * colW, y2 = centers[r + 1][Math.floor(i / 2)];
+      const x1 = r * colW + 180,
+        y1 = centers[r][i];
+      const x2 = (r + 1) * colW,
+        y2 = centers[r + 1][Math.floor(i / 2)];
       const midX = (x1 + x2) / 2;
       lines.push(
-        <path key={`${r}-${i}`} d={`M${x1},${y1} L${midX},${y1} L${midX},${y2} L${x2},${y2}`} stroke="#3a3d47" strokeWidth="1.5" fill="none" />
+        <path
+          key={`${r}-${i}`}
+          d={`M${x1},${y1} L${midX},${y1} L${midX},${y2} L${x2},${y2}`}
+          stroke="#3a3d47"
+          strokeWidth="1.5"
+          fill="none"
+        />,
       );
     });
   }
 
   return (
     <div className="tk-bracket-scroll">
-      <div className="tk-bracket" style={{ height: totalHeight + 24, width: totalWidth }}>
-        <svg className="tk-bracket-lines" width={totalWidth} height={totalHeight}>
+      <div
+        className="tk-bracket"
+        style={{ height: totalHeight + 24, width: totalWidth }}
+      >
+        <svg
+          className="tk-bracket-lines"
+          width={totalWidth}
+          height={totalHeight}
+        >
           {lines}
         </svg>
         {rounds.map((round, r) => (
           <div key={r} className="tk-bcol" style={{ left: r * colW }}>
-            <div className="tk-bcol-label">{roundLabels ? roundLabels[r] : `Round ${r + 1}`}</div>
+            <div className="tk-bcol-label">
+              {roundLabels ? roundLabels[r] : `Round ${r + 1}`}
+            </div>
             {round.map((m, i) => (
-              <div key={m.id} className="tk-bmatch" style={{ top: centers[r][i] - matchH / 2 + 24 }}>
+              <div
+                key={m.id}
+                className="tk-bmatch"
+                style={{ top: centers[r][i] - matchH / 2 + 24 }}
+              >
                 {SLOTS.map((slot) => {
                   const pid = m[slot];
                   const isWinner = !!m.winnerId && m.winnerId === pid;
-                  const canClick = !readOnly && pid && m.p1Id && m.p2Id && !m.winnerId;
+                  const canClick =
+                    !readOnly && pid && m.p1Id && m.p2Id && !m.winnerId;
                   return (
                     <div
                       key={slot}
-                      className={`tk-bslot ${isWinner ? "winner" : ""} ${!pid ? "empty" : ""}`}
+                      className={`tk-bslot ${isWinner ? 'winner' : ''} ${!pid ? 'empty' : ''}`}
                       onClick={() => canClick && pid && onReport(m.id, pid)}
                     >
                       <span>{nameOf(playerMap, pid)}</span>

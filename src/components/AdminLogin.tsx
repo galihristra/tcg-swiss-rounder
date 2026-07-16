@@ -1,7 +1,7 @@
-import { useState } from "react";
-import { sendMagicLink, signOut } from "../lib/auth";
+import { useState } from 'react';
+import { sendMagicLink, signOut } from '../lib/auth';
 
-type Status = "idle" | "sending" | "sent" | "error";
+type Status = 'idle' | 'sending' | 'sent' | 'error';
 
 interface AdminLoginProps {
   isAdmin: boolean;
@@ -9,19 +9,19 @@ interface AdminLoginProps {
 
 export default function AdminLogin({ isAdmin }: AdminLoginProps) {
   const [open, setOpen] = useState(false);
-  const [email, setEmail] = useState("");
-  const [status, setStatus] = useState<Status>("idle");
-  const [errorMsg, setErrorMsg] = useState("");
+  const [email, setEmail] = useState('');
+  const [status, setStatus] = useState<Status>('idle');
+  const [errorMsg, setErrorMsg] = useState('');
 
   const submit = async () => {
     const trimmed = email.trim();
     if (!trimmed) return;
-    setStatus("sending");
+    setStatus('sending');
     try {
       await sendMagicLink(trimmed);
-      setStatus("sent");
+      setStatus('sent');
     } catch (e) {
-      setStatus("error");
+      setStatus('error');
       setErrorMsg(e instanceof Error ? e.message : String(e));
     }
   };
@@ -45,8 +45,10 @@ export default function AdminLogin({ isAdmin }: AdminLoginProps) {
     );
   }
 
-  if (status === "sent") {
-    return <span className="tk-hint">Check your email for a sign-in link.</span>;
+  if (status === 'sent') {
+    return (
+      <span className="tk-hint">Check your email for a sign-in link.</span>
+    );
   }
 
   return (
@@ -57,15 +59,21 @@ export default function AdminLogin({ isAdmin }: AdminLoginProps) {
         placeholder="organizer@example.com"
         value={email}
         onChange={(e) => setEmail(e.target.value)}
-        onKeyDown={(e) => e.key === "Enter" && submit()}
+        onKeyDown={(e) => e.key === 'Enter' && submit()}
       />
-      <button className="tk-btn" disabled={status === "sending"} onClick={submit}>
-        {status === "sending" ? "Sending…" : "Send link"}
+      <button
+        className="tk-btn"
+        disabled={status === 'sending'}
+        onClick={submit}
+      >
+        {status === 'sending' ? 'Sending…' : 'Send link'}
       </button>
       <button className="tk-btn ghost" onClick={() => setOpen(false)}>
         Cancel
       </button>
-      {status === "error" && <span className="tk-hint tk-error">{errorMsg}</span>}
+      {status === 'error' && (
+        <span className="tk-hint tk-error">{errorMsg}</span>
+      )}
     </div>
   );
 }

@@ -19,6 +19,7 @@ registration, pairings/brackets, and standings**.
 
 Known, intentional simplifications (see comments at the top of
 `tournament.js`):
+
 1. Swiss pairing is greedy nearest-neighbor by standing, not the full
    Dutch/USCF algorithm — fine below ~64 players, could in rare cases
    force one avoidable rematch.
@@ -43,6 +44,7 @@ rules for sanctioned play) — flag it before then.
 ## Roadmap
 
 ### Phase 1 — Registration & check-in (next)
+
 - Event model: name, format, game, round count, capacity, entry fee.
 - Player registration flow (self-serve link vs. organizer-entered).
 - Check-in: roster confirmed present before round 1 pairs; drop/no-show
@@ -50,6 +52,7 @@ rules for sanctioned play) — flag it before then.
 - Decklist submission if the format requires it (optional per event).
 
 ### Phase 2 — Persistence ✅ (done)
+
 - **Supabase** (Postgres) as the backend; the Vite SPA talks to it directly
   via `@supabase/supabase-js` (client in `src/lib/supabase.ts`, data access in
   `src/lib/eventStore.ts`). Schema in `supabase/schema.sql`.
@@ -64,19 +67,22 @@ rules for sanctioned play) — flag it before then.
   "who can report results").
 
 TODO / follow-ups for Phase 2:
+
 - [ ] **Archive view for elimination events.** The "Past events" detail shows
-  Swiss *standings*, which is meaningless for Single/Double Elim events (their
-  result lives in the bracket, not match points — an archived elim event shows
-  everyone at 0). Show the final bracket / champion for elim-format archives.
+      Swiss _standings_, which is meaningless for Single/Double Elim events (their
+      result lives in the bracket, not match points — an archived elim event shows
+      everyone at 0). Show the final bracket / champion for elim-format archives.
 - [ ] Consider formalizing "an event has one chosen format" instead of the
-  free tab-switch, so archives are unambiguous.
+      free tab-switch, so archives are unambiguous.
 - [ ] Last-write-wins only; no multi-device conflict handling (fine for a
-  single organizer — revisit if Phase 3 adds concurrent editors).
+      single organizer — revisit if Phase 3 adds concurrent editors).
 
 ### Phase 3 — Admin auth & view-only participants (current)
+
 Right now the running event shares state across every device with no
 distinction between roles — anyone with the URL can report results, start
 rounds, edit the roster, etc. Phase 3 splits this into two layers:
+
 - **Organizer (admin):** signs in, can do everything (roster, rounds,
   reporting, archiving).
 - **Everyone else (participant):** no login, sees the same live event
@@ -88,10 +94,11 @@ rounds, edit the roster, etc. Phase 3 splits this into two layers:
   organizer" are the same thing — no admin table needed.
 - **Enforcement is in Postgres RLS**, not just the UI: `select` stays open
   to everyone; `insert`/`update`/`delete` require `auth.role() =
-  'authenticated'`. A determined participant poking the API directly still
+'authenticated'`. A determined participant poking the API directly still
   can't write.
 
 ### Phase 4 — Live/shared views
+
 - Player-facing "what table am I at" / standings view that updates
   without the organizer manually refreshing (polling is fine to start;
   websockets only if it's justified). Phase 3's read-only participant view
@@ -100,10 +107,11 @@ rounds, edit the roster, etc. Phase 3 splits this into two layers:
   there's a reason for other devices to watch it live.
 
 ### Phase 5 — Polish
+
 - Print/export pairings and standings (many stores still post a paper
   sheet at the table).
 - Tiebreaker display detail — show the breakdown, not just the number,
-  so a player can see *why* they placed where they did.
+  so a player can see _why_ they placed where they did.
 
 ## Immediate next steps for this session
 

@@ -1,12 +1,12 @@
-import { supabase } from "./supabase";
+import { supabase } from './supabase';
 import type {
   Player,
   SwissMatch,
   SingleEliminationBracket,
   DoubleEliminationBracket,
-} from "../engine/tournament";
+} from '../engine/tournament';
 
-export type Mode = "swiss" | "single" | "double";
+export type Mode = 'swiss' | 'single' | 'double';
 
 /** Everything about one event that we persist (excludes transient UI like the add-player input). */
 export interface EventState {
@@ -33,15 +33,15 @@ export interface ArchivedEventSummary {
   state: EventState;
 }
 
-const TABLE = "events";
+const TABLE = 'events';
 
 export function emptyState(): EventState {
   return {
-    mode: "swiss",
+    mode: 'swiss',
     players: [],
     matches: [],
     round: 0,
-    roundsInput: "3",
+    roundsInput: '3',
     eventFinished: false,
     singleBracket: null,
     doubleBracket: null,
@@ -53,7 +53,9 @@ export function defaultEventName(): string {
 }
 
 /** Fill in any fields missing from a persisted blob (forward-compatible with older rows). */
-function normalizeState(state: Partial<EventState> | null | undefined): EventState {
+function normalizeState(
+  state: Partial<EventState> | null | undefined,
+): EventState {
   return { ...emptyState(), ...(state ?? {}) };
 }
 
@@ -61,13 +63,14 @@ function normalizeState(state: Partial<EventState> | null | undefined): EventSta
 export async function loadOrCreateActiveEvent(): Promise<EventRecord> {
   const { data, error } = await supabase
     .from(TABLE)
-    .select("id, name, state")
-    .eq("status", "active")
-    .order("updated_at", { ascending: false })
+    .select('id, name, state')
+    .eq('status', 'active')
+    .order('updated_at', { ascending: false })
     .limit(1)
     .maybeSingle();
   if (error) throw error;
-  if (data) return { id: data.id, name: data.name, state: normalizeState(data.state) };
+  if (data)
+    return { id: data.id, name: data.name, state: normalizeState(data.state) };
   return createActiveEvent();
 }
 
@@ -76,21 +79,33 @@ async function createActiveEvent(): Promise<EventRecord> {
   const state = emptyState();
   const { data, error } = await supabase
     .from(TABLE)
-    .insert({ name, state, status: "active" })
-    .select("id, name, state")
+    .insert({ name, state, status: 'active' })
+    .select('id, name, state')
     .single();
   if (error) throw error;
   return { id: data.id, name: data.name, state: normalizeState(data.state) };
 }
 
-export async function saveEvent(id: string, name: string, state: EventState): Promise<void> {
-  const { error } = await supabase.from(TABLE).update({ name, state }).eq("id", id);
+export async function saveEvent(
+  id: string,
+  name: string,
+  state: EventState,
+): Promise<void> {
+  const { error } = await supabase
+    .from(TABLE)
+    .update({ name, state })
+    .eq('id', id);
   if (error) throw error;
 }
 
 /** Archive the current event and start a fresh active one; returns the new active event. */
-export async function archiveAndCreate(currentId: string): Promise<EventRecord> {
-  const { error } = await supabase.from(TABLE).update({ status: "archived" }).eq("id", currentId);
+export async function archiveAndCreate(
+  currentId: string,
+): Promise<EventRecord> {
+  const { error } = await supabase
+    .from(TABLE)
+    .update({ status: 'archived' })
+    .eq('id', currentId);
   if (error) throw error;
   return createActiveEvent();
 }
@@ -98,9 +113,9 @@ export async function archiveAndCreate(currentId: string): Promise<EventRecord> 
 export async function listArchivedEvents(): Promise<ArchivedEventSummary[]> {
   const { data, error } = await supabase
     .from(TABLE)
-    .select("id, name, updated_at, state")
-    .eq("status", "archived")
-    .order("updated_at", { ascending: false });
+    .select('id, name, updated_at, state')
+    .eq('status', 'archived')
+    .order('updated_at', { ascending: false });
   if (error) throw error;
   return (data ?? []).map((r) => ({
     id: r.id,
