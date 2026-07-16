@@ -1,0 +1,63 @@
+.tk-root { --bg:#121316; --panel:#1b1d22; --card:#23262d; --border:#2e313a; --text:#edeef2;
+  --muted:#8a8d98; --gold:#d6a93c; --gold-dim:#8a713a; --win:#4f9d6e; --loss:#c1584a; --draw:#6e7480;
+  background:var(--bg); color:var(--text); min-height:100vh; font-family:'Inter',system-ui,sans-serif;
+  padding:24px; box-sizing:border-box; }
+.tk-root *{ box-sizing:border-box; }
+.tk-display{ font-family:'Barlow Condensed','Inter',sans-serif; font-weight:700; letter-spacing:0.02em; }
+.tk-mono{ font-family:'JetBrains Mono','Menlo',monospace; font-variant-numeric:tabular-nums; }
+.tk-header{ display:flex; align-items:baseline; justify-content:space-between; flex-wrap:wrap; gap:12px; margin-bottom:20px; border-bottom:1px solid var(--border); padding-bottom:16px; }
+.tk-title{ font-size:28px; text-transform:uppercase; }
+.tk-title small{ display:block; font-family:'Inter',sans-serif; font-weight:400; letter-spacing:0; text-transform:none; color:var(--muted); font-size:13px; margin-top:2px; }
+.tk-tabs{ display:flex; gap:2px; background:var(--panel); border:1px solid var(--border); border-radius:8px; padding:3px; }
+.tk-tab{ font-family:'Barlow Condensed',sans-serif; font-weight:600; font-size:14px; letter-spacing:0.04em; text-transform:uppercase; padding:8px 16px; border-radius:6px; border:none; background:transparent; color:var(--muted); cursor:pointer; }
+.tk-tab.active{ background:var(--gold); color:#1a1400; }
+.tk-layout{ display:grid; grid-template-columns:260px 1fr; gap:20px; align-items:start; }
+@media (max-width:800px){ .tk-layout{ grid-template-columns:1fr; } }
+.tk-panel{ background:var(--panel); border:1px solid var(--border); border-radius:10px; padding:16px; }
+.tk-panel h3{ font-family:'Barlow Condensed',sans-serif; text-transform:uppercase; letter-spacing:0.04em; font-size:15px; color:var(--muted); margin:0 0 12px; }
+.tk-roster-row{ display:flex; align-items:center; gap:8px; padding:6px 0; border-bottom:1px dashed var(--border); }
+.tk-seed{ font-family:'JetBrains Mono',monospace; font-size:12px; color:var(--gold-dim); width:22px; }
+.tk-roster-row input{ flex:1; background:transparent; border:none; color:var(--text); font-size:14px; padding:2px 0; }
+.tk-roster-row input:focus{ outline:none; border-bottom:1px solid var(--gold); }
+.tk-x{ background:none; border:none; color:var(--muted); cursor:pointer; font-size:16px; line-height:1; padding:2px 6px; }
+.tk-x:hover{ color:var(--loss); }
+.tk-add{ display:flex; gap:6px; margin-top:10px; }
+.tk-add input{ flex:1; background:var(--card); border:1px solid var(--border); border-radius:6px; color:var(--text); padding:7px 8px; font-size:13px; }
+.tk-btn{ font-family:'Barlow Condensed',sans-serif; font-weight:600; text-transform:uppercase; letter-spacing:0.03em; font-size:13px; background:var(--gold); color:#1a1400; border:none; border-radius:6px; padding:8px 14px; cursor:pointer; }
+.tk-btn:disabled{ background:var(--border); color:var(--muted); cursor:not-allowed; }
+.tk-btn.ghost{ background:transparent; border:1px solid var(--border); color:var(--text); }
+.tk-roundbar{ display:flex; align-items:center; justify-content:space-between; margin-bottom:14px; }
+.tk-roundlabel{ font-family:'Barlow Condensed',sans-serif; font-size:20px; text-transform:uppercase; }
+.tk-roundlabel .tk-gold{ color:var(--gold); }
+.tk-ticket{ position:relative; display:grid; grid-template-columns:32px 1fr auto; align-items:center; gap:14px; background:var(--card); border:1px solid var(--border); border-left:3px dashed var(--gold-dim); border-radius:6px; padding:12px 14px; margin-bottom:8px; }
+.tk-ticket .tk-seed{ text-align:center; width:auto; }
+.tk-side{ display:flex; align-items:center; gap:8px; }
+.tk-side button{ all:unset; cursor:pointer; padding:6px 10px; border-radius:5px; font-size:14px; }
+.tk-side button:hover{ background:rgba(214,169,60,0.12); }
+.tk-name{ font-size:14.5px; }
+.tk-vs{ color:var(--muted); font-size:12px; margin:0 6px; font-family:'JetBrains Mono',monospace; }
+.tk-stamp{ font-family:'Barlow Condensed',sans-serif; font-size:11px; font-weight:700; letter-spacing:0.06em; text-transform:uppercase; padding:3px 8px; border-radius:3px; transform:rotate(-4deg); border:1.5px solid currentColor; }
+.tk-stamp.win{ color:var(--win); } .tk-stamp.loss{ color:var(--loss); } .tk-stamp.draw{ color:var(--draw); }
+.tk-scoretoggle{ display:flex; align-items:center; gap:5px; font-size:11px; color:var(--muted); }
+.tk-bye{ background:var(--card); border:1px dashed var(--border); border-radius:6px; padding:10px 14px; color:var(--muted); font-size:13px; margin-bottom:8px; }
+.tk-standings{ width:100%; border-collapse:collapse; margin-top:6px; }
+.tk-standings th{ text-align:left; font-family:'Barlow Condensed',sans-serif; text-transform:uppercase; font-size:11px; letter-spacing:0.05em; color:var(--muted); padding:6px 10px; border-bottom:1px solid var(--border); }
+.tk-standings td{ padding:7px 10px; border-bottom:1px solid var(--border); font-size:13.5px; }
+.tk-standings td.tk-num{ font-family:'JetBrains Mono',monospace; color:var(--muted); }
+.tk-standings tr:first-child td{ color:var(--gold); }
+.tk-bracket-scroll{ overflow-x:auto; padding:6px 0 16px; }
+.tk-bracket{ position:relative; }
+.tk-bcol{ position:absolute; top:0; width:180px; }
+.tk-bcol-label{ font-family:'Barlow Condensed',sans-serif; font-size:12px; text-transform:uppercase; letter-spacing:0.05em; color:var(--muted); text-align:center; margin-bottom:6px; }
+.tk-bmatch{ position:absolute; width:180px; background:var(--card); border:1px solid var(--border); border-radius:6px; overflow:hidden; }
+.tk-bslot{ display:flex; justify-content:space-between; align-items:center; padding:6px 9px; font-size:12.5px; border-bottom:1px solid var(--border); cursor:pointer; }
+.tk-bslot:last-child{ border-bottom:none; }
+.tk-bslot:hover{ background:rgba(214,169,60,0.1); }
+.tk-bslot.winner{ color:var(--gold); font-weight:600; }
+.tk-bslot.empty{ color:var(--muted); font-style:italic; cursor:default; }
+.tk-bslot.empty:hover{ background:none; }
+.tk-lbwrap{ display:flex; gap:14px; overflow-x:auto; padding:6px 0 10px; }
+.tk-lbcol{ min-width:170px; }
+.tk-gf{ display:flex; gap:14px; margin-top:18px; flex-wrap:wrap; }
+.tk-gf .tk-bmatch{ position:static; width:200px; }
+.tk-empty{ color:var(--muted); font-size:13px; padding:20px; text-align:center; border:1px dashed var(--border); border-radius:8px; }

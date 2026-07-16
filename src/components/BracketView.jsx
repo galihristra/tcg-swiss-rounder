@@ -1,0 +1,73 @@
+import React, { useMemo } from "react";
+
+export function nameOf(playerMap, id) {
+  if (!id) return "—";
+  return playerMap[id]?.name || id;
+}
+
+export default function BracketView({ rounds, roundLabels, playerMap, onReport }) {
+  const matchH = 46, gapUnit = 62;
+  const n0 = rounds[0].length;
+
+  const centers = useMemo(() => {
+    let prev = Array.from({ length: n0 }, (_, i) => i * gapUnit + gapUnit / 2);
+    const all = [prev];
+    for (let r = 1; r < rounds.length; r++) {
+      const cur = [];
+      for (let i = 0; i < prev.length / 2; i++) cur.push((prev[2 * i] + prev[2 * i + 1]) / 2);
+      all.push(cur);
+      prev = cur;
+    }
+    return all;
+  }, [rounds.length, n0]);
+
+  const totalHeight = n0 * gapUnit;
+  const colW = 196;
+  const totalWidth = rounds.length * colW + 40;
+
+  const lines = [];
+  for (let r = 0; r < rounds.length - 1; r++) {
+    rounds[r].forEach((m, i) => {
+      const x1 = r * colW + 180, y1 = centers[r][i];
+      const x2 = (r + 1) * colW, y2 = centers[r + 1][Math.floor(i / 2)];
+      const midX = (x1 + x2) / 2;
+      lines.push(
+        <path key={`${r}-${i}`} d={`M${x1},${y1} L${midX},${y1} L${midX},${y2} L${x2},${y2}`} stroke="#3a3d47" strokeWidth="1.5" fill="none" />
+      );
+    });
+  }
+
+  return (
+    <div className="tk-bracket-scroll">
+      <div className="tk-bracket" style={{ height: totalHeight + 24, width: totalWidth }}>
+        <svg width={totalWidth} height={totalHeight} style={{ position: "absolute", top: 24, left: 0 }}>
+          {lines}
+        </svg>
+        {rounds.map((round, r) => (
+          <div key={r} className="tk-bcol" style={{ left: r * colW }}>
+            <div className="tk-bcol-label">{roundLabels ? roundLabels[r] : `Round ${r + 1}`}</div>
+            {round.map((m, i) => (
+              <div key={m.id} className="tk-bmatch" style={{ top: centers[r][i] - matchH / 2 + 24 }}>
+                {["p1Id", "p2Id"].map((slot) => {
+                  const pid = m[slot];
+                  const isWinner = m.winnerId && m.winnerId === pid;
+                  const canClick = pid && m.p1Id && m.p2Id && !m.winnerId;
+                  return (
+                    <div
+                      key={slot}
+                      className={`tk-bslot ${isWinner ? "winner" : ""} ${!pid ? "empty" : ""}`}
+                      onClick={() => canClick && onReport(m.id, pid)}
+                    >
+                      <span>{nameOf(playerMap, pid)}</span>
+                      {isWinner && <span style={{ fontSize: 10 }}>W</span>}
+                    </div>
+                  );
+                })}
+              </div>
+            ))}
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
