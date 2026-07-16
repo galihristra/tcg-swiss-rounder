@@ -51,7 +51,7 @@ export default function SwissPanel({
           event
         </div>
         <h3 className="tk-section-title">Final Standings</h3>
-        <StandingsTable rows={standings} />
+        <StandingsTable rows={standings} playerMap={playerMap} />
       </div>
     );
   }
@@ -151,7 +151,7 @@ export default function SwissPanel({
       {matches.length > 0 && (
         <div className="tk-standings-block">
           <h3 className="tk-section-title">Standings</h3>
-          <StandingsTable rows={standings} />
+          <StandingsTable rows={standings} playerMap={playerMap} />
         </div>
       )}
     </div>

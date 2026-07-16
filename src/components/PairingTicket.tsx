@@ -1,5 +1,32 @@
 import { useState } from 'react';
 import type { Player, SwissMatch, MatchResult } from '../engine/tournament';
+import { getPokemon, pokemonSpriteUrl } from '../lib/pokemon';
+
+function DeckSprites({ player }: { player: Player }) {
+  const deck1 = getPokemon(player.deckPokemon1);
+  const deck2 = getPokemon(player.deckPokemon2);
+  if (!deck1 && !deck2) return null;
+  return (
+    <>
+      {deck1 && (
+        <img
+          className="tk-deck-sprite-mini"
+          src={pokemonSpriteUrl(deck1)}
+          alt={deck1.name}
+          loading="lazy"
+        />
+      )}
+      {deck2 && (
+        <img
+          className="tk-deck-sprite-mini"
+          src={pokemonSpriteUrl(deck2)}
+          alt={deck2.name}
+          loading="lazy"
+        />
+      )}
+    </>
+  );
+}
 
 interface GameToggleProps {
   close: boolean;
@@ -57,16 +84,20 @@ export default function PairingTicket({
         <div className="tk-side">
           {readOnly ? (
             <>
+              <DeckSprites player={p1} />
               <span className="tk-name">{p1.name}</span>
               <span className="tk-vs">vs</span>
+              <DeckSprites player={p2} />
               <span className="tk-name">{p2.name}</span>
             </>
           ) : (
             <>
+              <DeckSprites player={p1} />
               <button onClick={() => !decided && report('p1')}>
                 <span className="tk-name">{p1.name}</span>
               </button>
               <span className="tk-vs">vs</span>
+              <DeckSprites player={p2} />
               <button onClick={() => !decided && report('p2')}>
                 <span className="tk-name">{p2.name}</span>
               </button>

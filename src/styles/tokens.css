@@ -785,4 +785,116 @@ body {
     padding: 6px 6px;
     font-size: 12px;
   }
+  .tk-deck-slots {
+    flex-direction: column;
+  }
+}
+
+/* ===================== Deck namesake picker ===================== */
+.tk-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+.tk-modal-header .tk-section-title {
+  margin: 0;
+}
+.tk-modal--wide {
+  width: 460px;
+  max-width: calc(100vw - 32px);
+}
+.tk-deck-slots {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 14px;
+}
+.tk-deck-chip {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 8px 10px;
+}
+.tk-deck-chip span {
+  flex: 1;
+  min-width: 0;
+  font-size: 14px;
+  text-transform: lowercase;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.tk-deck-save {
+  width: 100%;
+}
+.tk-deck-sprite,
+.tk-deck-sprite-mini {
+  image-rendering: pixelated;
+  object-fit: contain;
+  flex-shrink: 0;
+}
+.tk-deck-sprite-mini {
+  width: 20px;
+  height: 20px;
+  vertical-align: middle;
+  margin-right: 2px;
+}
+.tk-combobox {
+  flex: 1;
+  min-width: 0;
+  position: relative;
+}
+.tk-combobox-input {
+  width: 100%;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: var(--text);
+  padding: 9px 10px;
+  font-size: 13px;
+  box-sizing: border-box;
+}
+.tk-combobox-input:focus {
+  outline: none;
+  border-color: var(--gold);
+}
+.tk-combobox-list {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  right: 0;
+  z-index: 10;
+  max-height: 240px;
+  overflow-y: auto;
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  margin: 0;
+  padding: 4px;
+  list-style: none;
+}
+.tk-combobox-option {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 8px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 13.5px;
+  text-transform: lowercase;
+}
+.tk-combobox-option.highlighted {
+  background: rgba(214, 169, 60, 0.15);
+  color: var(--gold);
+}
+.tk-combobox-empty {
+  padding: 8px;
+  color: var(--muted);
+  font-size: 12px;
 }

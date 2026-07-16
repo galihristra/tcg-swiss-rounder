@@ -4,6 +4,9 @@ export interface Player {
   name: string;
   seed?: number;
   dropped?: boolean;
+  /** National dex id of the deck's namesake Pokémon, set by the organizer. */
+  deckPokemon1?: string;
+  deckPokemon2?: string;
 }
 
 export type MatchResult = 'p1' | 'p2' | 'draw';

@@ -18,10 +18,12 @@
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.110.6",
+    "downshift": "^9.4.0",
     "react": "^19.2.7",
     "react-dom": "^19.2.7"
   },
   "devDependencies": {
+    "@pkmn/dex": "^0.10.11",
     "@types/react": "^19.2.17",
     "@types/react-dom": "^19.2.3",
     "@vitejs/plugin-react": "^4.3.1",

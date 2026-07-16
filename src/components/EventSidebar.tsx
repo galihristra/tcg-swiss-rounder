@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import type { Player } from '../engine/tournament';
 import type { Mode } from '../lib/eventStore';
+import { getPokemon, pokemonSpriteUrl } from '../lib/pokemon';
 
 interface EventSidebarProps {
   isAdmin: boolean;
@@ -11,6 +12,7 @@ interface EventSidebarProps {
   onRenamePlayer: (id: string, name: string) => void;
   onRemovePlayer: (id: string) => void;
   onAddPlayer: (name: string) => void;
+  onEditDeck: (id: string) => void;
   rosterLocked: boolean;
   mode: Mode;
   roundsInput: string;
@@ -31,6 +33,7 @@ export default function EventSidebar({
   onRenamePlayer,
   onRemovePlayer,
   onAddPlayer,
+  onEditDeck,
   rosterLocked,
   mode,
   roundsInput,
@@ -60,25 +63,53 @@ export default function EventSidebar({
       />
       <div className="tk-savestatus tk-hint">{saveLabel}</div>
       <h3>Participants · {players.length}</h3>
-      {players.map((p, i) => (
-        <div className="tk-roster-row" key={p.id}>
-          <span className="tk-seed">{i + 1}</span>
-          <input
-            value={p.name}
-            disabled={!isAdmin}
-            onChange={(e) => onRenamePlayer(p.id, e.target.value)}
-          />
-          {isAdmin && (
-            <button
-              className="tk-x"
-              disabled={rosterLocked}
-              onClick={() => onRemovePlayer(p.id)}
-            >
-              ×
-            </button>
-          )}
-        </div>
-      ))}
+      {players.map((p, i) => {
+        const deck1 = getPokemon(p.deckPokemon1);
+        const deck2 = getPokemon(p.deckPokemon2);
+        return (
+          <div className="tk-roster-row" key={p.id}>
+            <span className="tk-seed">{i + 1}</span>
+            {deck1 && (
+              <img
+                className="tk-deck-sprite-mini"
+                src={pokemonSpriteUrl(deck1)}
+                alt={deck1.name}
+                loading="lazy"
+              />
+            )}
+            {deck2 && (
+              <img
+                className="tk-deck-sprite-mini"
+                src={pokemonSpriteUrl(deck2)}
+                alt={deck2.name}
+                loading="lazy"
+              />
+            )}
+            <input
+              value={p.name}
+              disabled={!isAdmin}
+              onChange={(e) => onRenamePlayer(p.id, e.target.value)}
+            />
+            {isAdmin && (
+              <button
+                className="tk-btn ghost tk-btn--sm"
+                onClick={() => onEditDeck(p.id)}
+              >
+                Deck
+              </button>
+            )}
+            {isAdmin && (
+              <button
+                className="tk-x"
+                disabled={rosterLocked}
+                onClick={() => onRemovePlayer(p.id)}
+              >
+                ×
+              </button>
+            )}
+          </div>
+        );
+      })}
       {isAdmin && (
         <div className="tk-add">
           <input
