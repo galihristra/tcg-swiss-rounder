@@ -21,9 +21,10 @@ interface PairingTicketProps {
   p2: Player;
   match: SwissMatch;
   onReport: (patch: Partial<SwissMatch>) => void;
+  readOnly?: boolean;
 }
 
-export default function PairingTicket({ index, p1, p2, match, onReport }: PairingTicketProps) {
+export default function PairingTicket({ index, p1, p2, match, onReport, readOnly }: PairingTicketProps) {
   const [close, setClose] = useState(false);
   const decided = !!match.result;
 
@@ -42,15 +43,25 @@ export default function PairingTicket({ index, p1, p2, match, onReport }: Pairin
       <div className="tk-seed">{String(index + 1).padStart(2, "0")}</div>
       <div>
         <div className="tk-side">
-          <button onClick={() => !decided && report("p1")}>
-            <span className="tk-name">{p1.name}</span>
-          </button>
-          <span className="tk-vs">vs</span>
-          <button onClick={() => !decided && report("p2")}>
-            <span className="tk-name">{p2.name}</span>
-          </button>
+          {readOnly ? (
+            <>
+              <span className="tk-name">{p1.name}</span>
+              <span className="tk-vs">vs</span>
+              <span className="tk-name">{p2.name}</span>
+            </>
+          ) : (
+            <>
+              <button onClick={() => !decided && report("p1")}>
+                <span className="tk-name">{p1.name}</span>
+              </button>
+              <span className="tk-vs">vs</span>
+              <button onClick={() => !decided && report("p2")}>
+                <span className="tk-name">{p2.name}</span>
+              </button>
+            </>
+          )}
         </div>
-        {!decided && (
+        {!decided && !readOnly && (
           <div className="tk-report">
             <GameToggle close={close} setClose={setClose} />
             <button className="tk-btn ghost tk-btn--sm" onClick={() => report("draw")}>
@@ -58,6 +69,7 @@ export default function PairingTicket({ index, p1, p2, match, onReport }: Pairin
             </button>
           </div>
         )}
+        {!decided && readOnly && <div className="tk-hint">Awaiting result</div>}
       </div>
       <div className="tk-result">
         {match.result === "p1" && (
@@ -67,7 +79,7 @@ export default function PairingTicket({ index, p1, p2, match, onReport }: Pairin
           <span className="tk-stamp win">{p2.name} won {match.p2Games}–{match.p1Games}</span>
         )}
         {match.result === "draw" && <span className="tk-stamp draw">Draw</span>}
-        {decided && (
+        {decided && !readOnly && (
           <button
             className="tk-btn ghost tk-btn--sm"
             onClick={() => onReport({ result: null, p1Games: 0, p2Games: 0 })}

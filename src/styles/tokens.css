@@ -87,6 +87,11 @@ html, body { margin:0; padding:0; background:#121316; }
 .tk-x:disabled{ opacity:0.35; cursor:not-allowed; }
 .tk-x:disabled:hover{ color:var(--muted); }
 .tk-add input:disabled{ opacity:0.5; cursor:not-allowed; }
+.tk-admin-badge{ display:flex; align-items:center; gap:8px; }
+.tk-admin-login{ display:flex; align-items:center; gap:6px; flex-wrap:wrap; }
+.tk-admin-email{ background:var(--card); border:1px solid var(--border); border-radius:6px; color:var(--text); padding:6px 9px; font-size:13px; width:190px; }
+.tk-admin-email:focus{ outline:none; border-color:var(--gold); }
+.tk-error{ color:var(--loss); }
 .tk-headright{ display:flex; align-items:center; gap:10px; flex-wrap:wrap; }
 .tk-eventname{ width:100%; background:var(--card); border:1px solid var(--border); border-radius:6px; color:var(--text); padding:8px 10px; font-family:'Barlow Condensed',sans-serif; font-weight:600; font-size:16px; letter-spacing:0.02em; }
 .tk-eventname:focus{ outline:none; border-color:var(--gold); }

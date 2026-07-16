@@ -19,11 +19,12 @@ interface BracketViewProps {
   roundLabels?: string[];
   playerMap: Record<string, Player>;
   onReport: (matchId: string, winnerId: string) => void;
+  readOnly?: boolean;
 }
 
 const SLOTS = ["p1Id", "p2Id"] as const;
 
-export default function BracketView({ rounds, roundLabels, playerMap, onReport }: BracketViewProps) {
+export default function BracketView({ rounds, roundLabels, playerMap, onReport, readOnly }: BracketViewProps) {
   const matchH = 46, gapUnit = 62;
   const n0 = rounds[0].length;
 
@@ -69,7 +70,7 @@ export default function BracketView({ rounds, roundLabels, playerMap, onReport }
                 {SLOTS.map((slot) => {
                   const pid = m[slot];
                   const isWinner = !!m.winnerId && m.winnerId === pid;
-                  const canClick = pid && m.p1Id && m.p2Id && !m.winnerId;
+                  const canClick = !readOnly && pid && m.p1Id && m.p2Id && !m.winnerId;
                   return (
                     <div
                       key={slot}

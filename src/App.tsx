@@ -1,4 +1,5 @@
 import { useState, useMemo, useCallback, useEffect, useRef } from "react";
+import type { Session } from "@supabase/supabase-js";
 import {
   computeStandings,
   generateSwissPairings,
@@ -20,9 +21,11 @@ import {
   listArchivedEvents,
 } from "./lib/eventStore";
 import type { Mode, EventState, EventRecord, ArchivedEventSummary } from "./lib/eventStore";
+import { getSession, onAuthStateChange } from "./lib/auth";
 import PairingTicket from "./components/PairingTicket";
 import StandingsTable from "./components/StandingsTable";
 import BracketView, { nameOf } from "./components/BracketView";
+import AdminLogin from "./components/AdminLogin";
 
 const MODE_TABS: [Mode, string][] = [["swiss", "Swiss"], ["single", "Single Elim"], ["double", "Double Elim"]];
 const SLOTS = ["p1Id", "p2Id"] as const;
@@ -61,6 +64,15 @@ export default function App() {
   const [view, setView] = useState<View>("event");
   const [archived, setArchived] = useState<ArchivedEventSummary[]>([]);
   const [viewingArchive, setViewingArchive] = useState<ArchivedEventSummary | null>(null);
+
+  // Auth: only the organizer ever has a session (public sign-ups are disabled).
+  const [session, setSession] = useState<Session | null>(null);
+  const isAdmin = !!session;
+
+  useEffect(() => {
+    getSession().then(setSession).catch((e) => console.error("Failed to get session", e));
+    return onAuthStateChange(setSession);
+  }, []);
 
   const applyRecord = useCallback((rec: EventRecord) => {
     setEventId(rec.id);
@@ -210,6 +222,7 @@ export default function App() {
           <button className={`tk-btn ghost tk-btn--sm ${view === "archive" ? "active" : ""}`} onClick={openArchive}>
             Past events
           </button>
+          <AdminLogin isAdmin={isAdmin} />
         </div>
       </div>
 
@@ -260,6 +273,7 @@ export default function App() {
               className="tk-eventname"
               value={eventName}
               placeholder="Event name"
+              disabled={!isAdmin}
               onChange={(e) => setEventName(e.target.value)}
             />
             <div className="tk-savestatus tk-hint">{saveLabel}</div>
@@ -269,26 +283,32 @@ export default function App() {
                 <span className="tk-seed">{i + 1}</span>
                 <input
                   value={p.name}
+                  disabled={!isAdmin}
                   onChange={(e) => setPlayers((ps) => ps.map((x) => (x.id === p.id ? { ...x, name: e.target.value } : x)))}
                 />
-                <button className="tk-x" disabled={rosterLocked} onClick={() => removePlayer(p.id)}>
-                  ×
-                </button>
+                {isAdmin && (
+                  <button className="tk-x" disabled={rosterLocked} onClick={() => removePlayer(p.id)}>
+                    ×
+                  </button>
+                )}
               </div>
             ))}
-            <div className="tk-add">
-              <input
-                placeholder="Add player…"
-                value={newName}
-                disabled={rosterLocked}
-                onChange={(e) => setNewName(e.target.value)}
-                onKeyDown={(e) => e.key === "Enter" && addPlayer()}
-              />
-              <button className="tk-btn" disabled={rosterLocked} onClick={addPlayer}>
-                Add
-              </button>
-            </div>
-            {rosterLocked && <p className="tk-suggest">Roster is locked while the event is running.</p>}
+            {isAdmin && (
+              <div className="tk-add">
+                <input
+                  placeholder="Add player…"
+                  value={newName}
+                  disabled={rosterLocked}
+                  onChange={(e) => setNewName(e.target.value)}
+                  onKeyDown={(e) => e.key === "Enter" && addPlayer()}
+                />
+                <button className="tk-btn" disabled={rosterLocked} onClick={addPlayer}>
+                  Add
+                </button>
+              </div>
+            )}
+            {isAdmin && rosterLocked && <p className="tk-suggest">Roster is locked while the event is running.</p>}
+            {!isAdmin && <p className="tk-suggest">View-only — sign in as organizer to manage the roster.</p>}
             {mode === "swiss" && (
               <div className="tk-rounds-setting">
                 <label htmlFor="tk-round-count">Rounds</label>
@@ -297,7 +317,7 @@ export default function App() {
                   type="number"
                   min={3}
                   value={roundsInput}
-                  disabled={round > 0 || eventFinished}
+                  disabled={!isAdmin || round > 0 || eventFinished}
                   onChange={(e) => setRoundsInput(e.target.value)}
                 />
                 <span className="tk-hint">{roundsValid ? `suggested ${recommendedRounds}` : "min 3 rounds"}</span>
@@ -312,9 +332,11 @@ export default function App() {
                   <>
                     <div className="tk-roundbar">
                       <div className="tk-roundlabel">Event complete</div>
-                      <button className="tk-btn ghost" onClick={resetEvent}>
-                        New event
-                      </button>
+                      {isAdmin && (
+                        <button className="tk-btn ghost" onClick={resetEvent}>
+                          New event
+                        </button>
+                      )}
                     </div>
                     <div className="tk-champion">
                       🏆 <b className="tk-gold">{standings[0]?.name ?? "—"}</b> wins the event
@@ -335,19 +357,24 @@ export default function App() {
                         )}
                       </div>
                       {(() => {
-                        if (round === 0)
+                        if (round === 0) {
+                          if (!isAdmin) return <span className="tk-hint">Waiting for organizer to start the event</span>;
                           return (
                             <button className="tk-btn" disabled={players.length < 2 || !roundsValid} onClick={startRound}>
                               Start Round 1
                             </button>
                           );
+                        }
                         if (!roundComplete) return <span className="tk-hint">Report all results to continue</span>;
-                        if (round < roundCount)
+                        if (round < roundCount) {
+                          if (!isAdmin) return <span className="tk-hint">Waiting for organizer to start round {round + 1}</span>;
                           return (
                             <button className="tk-btn" onClick={startRound}>
                               Start Round {round + 1}
                             </button>
                           );
+                        }
+                        if (!isAdmin) return <span className="tk-hint">Waiting for organizer to finish the event</span>;
                         return (
                           <button className="tk-btn" onClick={finishEvent}>
                             Finish event
@@ -373,6 +400,7 @@ export default function App() {
                           p2={playerMap[m.p2Id!]}
                           match={m}
                           onReport={(patch) => reportSwiss(m, patch)}
+                          readOnly={!isAdmin}
                         />
                       ))}
                     {roundMatches
@@ -397,25 +425,32 @@ export default function App() {
             {mode === "single" && (
               <div className="tk-panel">
                 {!singleBracket ? (
-                  <>
-                    <button className="tk-btn" disabled={players.length < 2} onClick={genSingle}>
-                      Generate Bracket
-                    </button>
-                    <div className="tk-empty tk-empty--spaced">
-                      Seeded by roster order above (player 1 = top seed). Byes go to the top seeds if the field isn't a power
-                      of two.
-                    </div>
-                  </>
+                  isAdmin ? (
+                    <>
+                      <button className="tk-btn" disabled={players.length < 2} onClick={genSingle}>
+                        Generate Bracket
+                      </button>
+                      <div className="tk-empty tk-empty--spaced">
+                        Seeded by roster order above (player 1 = top seed). Byes go to the top seeds if the field isn't a
+                        power of two.
+                      </div>
+                    </>
+                  ) : (
+                    <div className="tk-empty">Waiting for organizer to generate the bracket.</div>
+                  )
                 ) : (
                   <>
-                    <button className="tk-btn ghost tk-reseed" onClick={genSingle}>
-                      Re-seed &amp; restart
-                    </button>
+                    {isAdmin && (
+                      <button className="tk-btn ghost tk-reseed" onClick={genSingle}>
+                        Re-seed &amp; restart
+                      </button>
+                    )}
                     <BracketView
                       rounds={singleBracket.rounds}
                       roundLabels={singleRoundLabels(singleBracket.totalRounds)}
                       playerMap={playerMap}
                       onReport={reportSingle}
+                      readOnly={!isAdmin}
                     />
                   </>
                 )}
@@ -425,25 +460,32 @@ export default function App() {
             {mode === "double" && (
               <div className="tk-panel">
                 {!doubleBracket ? (
-                  <>
-                    <button className="tk-btn" disabled={players.length < 2} onClick={genDouble}>
-                      Generate Bracket
-                    </button>
-                    <div className="tk-empty tk-empty--spaced">
-                      Lose in the winners' bracket and you drop to the losers' bracket. Lose twice and you're out.
-                    </div>
-                  </>
+                  isAdmin ? (
+                    <>
+                      <button className="tk-btn" disabled={players.length < 2} onClick={genDouble}>
+                        Generate Bracket
+                      </button>
+                      <div className="tk-empty tk-empty--spaced">
+                        Lose in the winners' bracket and you drop to the losers' bracket. Lose twice and you're out.
+                      </div>
+                    </>
+                  ) : (
+                    <div className="tk-empty">Waiting for organizer to generate the bracket.</div>
+                  )
                 ) : (
                   <>
-                    <button className="tk-btn ghost tk-reseed" onClick={genDouble}>
-                      Re-seed &amp; restart
-                    </button>
+                    {isAdmin && (
+                      <button className="tk-btn ghost tk-reseed" onClick={genDouble}>
+                        Re-seed &amp; restart
+                      </button>
+                    )}
                     <h3 className="tk-section-title">Winners' Bracket</h3>
                     <BracketView
                       rounds={doubleBracket.wbRounds}
                       roundLabels={singleRoundLabels(doubleBracket.wbRounds.length)}
                       playerMap={playerMap}
                       onReport={reportDouble}
+                      readOnly={!isAdmin}
                     />
 
                     <h3 className="tk-section-title">Losers' Bracket</h3>
@@ -456,7 +498,7 @@ export default function App() {
                               {SLOTS.map((slot) => {
                                 const pid = m[slot];
                                 const isWinner = !!m.winnerId && m.winnerId === pid;
-                                const canClick = pid && m.p1Id && m.p2Id && !m.winnerId;
+                                const canClick = isAdmin && pid && m.p1Id && m.p2Id && !m.winnerId;
                                 return (
                                   <div
                                     key={slot}
@@ -480,7 +522,7 @@ export default function App() {
                         {SLOTS.map((slot) => {
                           const pid = doubleBracket.grandFinal[slot];
                           const isWinner = doubleBracket.grandFinal.winnerId === pid;
-                          const canClick = pid && doubleBracket.grandFinal.p1Id && doubleBracket.grandFinal.p2Id && !doubleBracket.grandFinal.winnerId;
+                          const canClick = isAdmin && pid && doubleBracket.grandFinal.p1Id && doubleBracket.grandFinal.p2Id && !doubleBracket.grandFinal.winnerId;
                           return (
                             <div
                               key={slot}
@@ -500,7 +542,7 @@ export default function App() {
                             const pid = doubleBracket.grandFinalReset[slot];
                             const isWinner = doubleBracket.grandFinalReset.winnerId === pid;
                             const canClick =
-                              pid && doubleBracket.grandFinalReset.p1Id && doubleBracket.grandFinalReset.p2Id && !doubleBracket.grandFinalReset.winnerId;
+                              isAdmin && pid && doubleBracket.grandFinalReset.p1Id && doubleBracket.grandFinalReset.p2Id && !doubleBracket.grandFinalReset.winnerId;
                             return (
                               <div
                                 key={slot}

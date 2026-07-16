@@ -73,13 +73,33 @@ TODO / follow-ups for Phase 2:
 - [ ] Last-write-wins only; no multi-device conflict handling (fine for a
   single organizer — revisit if Phase 3 adds concurrent editors).
 
-### Phase 3 — Live/shared views
+### Phase 3 — Admin auth & view-only participants (current)
+Right now the running event shares state across every device with no
+distinction between roles — anyone with the URL can report results, start
+rounds, edit the roster, etc. Phase 3 splits this into two layers:
+- **Organizer (admin):** signs in, can do everything (roster, rounds,
+  reporting, archiving).
+- **Everyone else (participant):** no login, sees the same live event
+  read-only — roster, current pairings, standings, brackets — but every
+  write control is hidden/disabled.
+- **Auth:** Supabase Auth, **magic link**, **one shared admin account**.
+  Public sign-ups disabled in the Supabase dashboard and exactly one user
+  (the organizer's email) created manually, so "authenticated" and "the
+  organizer" are the same thing — no admin table needed.
+- **Enforcement is in Postgres RLS**, not just the UI: `select` stays open
+  to everyone; `insert`/`update`/`delete` require `auth.role() =
+  'authenticated'`. A determined participant poking the API directly still
+  can't write.
+
+### Phase 4 — Live/shared views
 - Player-facing "what table am I at" / standings view that updates
   without the organizer manually refreshing (polling is fine to start;
-  websockets only if it's justified).
-- Multi-organizer / judge support: who can report results.
+  websockets only if it's justified). Phase 3's read-only participant view
+  is the foundation this builds on.
+- Consider Supabase Realtime subscriptions on the `events` row now that
+  there's a reason for other devices to watch it live.
 
-### Phase 4 — Polish
+### Phase 5 — Polish
 - Print/export pairings and standings (many stores still post a paper
   sheet at the table).
 - Tiebreaker display detail — show the breakdown, not just the number,
