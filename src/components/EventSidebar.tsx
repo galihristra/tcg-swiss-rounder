@@ -104,7 +104,7 @@ export default function EventSidebar({
       )}
       {!isAdmin && (
         <p className="tk-suggest">
-          View-only — sign in as organizer to manage the roster.
+          View-only — sign in as organizer to manage the participants.
         </p>
       )}
       {mode === 'swiss' && (
