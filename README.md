@@ -44,7 +44,7 @@ dashboard — there's no self-serve sign-up.
 1. In the Supabase dashboard: **Authentication → Users → Add user**. Enter
    the organizer's email + a password, and check **Auto Confirm User**.
 2. **Authentication → Providers → Email**: turn off **Allow new users to
-   sign up**. This is what makes it a *single* admin account — no one else
+   sign up**. This is what makes it a _single_ admin account — no one else
    can ever create one, regardless of the (public) publishable key being in
    the browser bundle.
 3. In the app, click **Organizer sign in** (top right) and sign in with that

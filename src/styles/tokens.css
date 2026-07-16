@@ -539,6 +539,30 @@ body {
   gap: 8px;
   margin-top: 4px;
 }
+.tk-cancel-btn {
+  margin-top: 14px;
+  color: var(--loss);
+  border-color: var(--loss);
+}
+.tk-cancel-btn:hover {
+  background: rgba(193, 88, 74, 0.12);
+}
+.tk-btn-danger {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  font-size: 13px;
+  background: var(--loss);
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  padding: 8px 14px;
+  cursor: pointer;
+}
+.tk-btn-danger:hover {
+  opacity: 0.9;
+}
 .tk-headright {
   display: flex;
   align-items: center;
@@ -597,6 +621,44 @@ body {
   font-size: 12px;
   color: var(--muted);
   margin-top: 3px;
+}
+.tk-photo-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+  gap: 8px;
+  margin-top: 10px;
+}
+.tk-photo-item {
+  position: relative;
+  aspect-ratio: 1;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  overflow: hidden;
+  background: var(--card);
+}
+.tk-photo-thumb {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+.tk-photo-delete {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  width: 22px;
+  height: 22px;
+  line-height: 20px;
+  border-radius: 50%;
+  border: 1px solid var(--border);
+  background: rgba(0, 0, 0, 0.6);
+  color: var(--text);
+  cursor: pointer;
+  font-size: 14px;
+  padding: 0;
+}
+.tk-photo-delete:hover {
+  border-color: var(--gold-dim);
 }
 
 /* ============ Responsive: tablet & mobile ============ */
