@@ -1,6 +1,10 @@
-import React from "react";
+import type { StandingRow } from "../engine/tournament";
 
-export default function StandingsTable({ rows }) {
+interface StandingsTableProps {
+  rows: StandingRow[];
+}
+
+export default function StandingsTable({ rows }: StandingsTableProps) {
   return (
     <table className="tk-standings">
       <thead>

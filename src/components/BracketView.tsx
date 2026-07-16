@@ -1,19 +1,37 @@
-import React, { useMemo } from "react";
+import { useMemo, type ReactElement } from "react";
+import type { Player } from "../engine/tournament";
 
-export function nameOf(playerMap, id) {
+/** The subset of a bracket match this view needs to render a slot. */
+export interface BracketMatch {
+  id: string;
+  p1Id: string | null;
+  p2Id: string | null;
+  winnerId: string | null;
+}
+
+export function nameOf(playerMap: Record<string, Player>, id: string | null | undefined): string {
   if (!id) return "—";
   return playerMap[id]?.name || id;
 }
 
-export default function BracketView({ rounds, roundLabels, playerMap, onReport }) {
+interface BracketViewProps {
+  rounds: BracketMatch[][];
+  roundLabels?: string[];
+  playerMap: Record<string, Player>;
+  onReport: (matchId: string, winnerId: string) => void;
+}
+
+const SLOTS = ["p1Id", "p2Id"] as const;
+
+export default function BracketView({ rounds, roundLabels, playerMap, onReport }: BracketViewProps) {
   const matchH = 46, gapUnit = 62;
   const n0 = rounds[0].length;
 
   const centers = useMemo(() => {
     let prev = Array.from({ length: n0 }, (_, i) => i * gapUnit + gapUnit / 2);
-    const all = [prev];
+    const all: number[][] = [prev];
     for (let r = 1; r < rounds.length; r++) {
-      const cur = [];
+      const cur: number[] = [];
       for (let i = 0; i < prev.length / 2; i++) cur.push((prev[2 * i] + prev[2 * i + 1]) / 2);
       all.push(cur);
       prev = cur;
@@ -25,9 +43,9 @@ export default function BracketView({ rounds, roundLabels, playerMap, onReport }
   const colW = 196;
   const totalWidth = rounds.length * colW + 40;
 
-  const lines = [];
+  const lines: ReactElement[] = [];
   for (let r = 0; r < rounds.length - 1; r++) {
-    rounds[r].forEach((m, i) => {
+    rounds[r].forEach((_m, i) => {
       const x1 = r * colW + 180, y1 = centers[r][i];
       const x2 = (r + 1) * colW, y2 = centers[r + 1][Math.floor(i / 2)];
       const midX = (x1 + x2) / 2;
@@ -48,15 +66,15 @@ export default function BracketView({ rounds, roundLabels, playerMap, onReport }
             <div className="tk-bcol-label">{roundLabels ? roundLabels[r] : `Round ${r + 1}`}</div>
             {round.map((m, i) => (
               <div key={m.id} className="tk-bmatch" style={{ top: centers[r][i] - matchH / 2 + 24 }}>
-                {["p1Id", "p2Id"].map((slot) => {
+                {SLOTS.map((slot) => {
                   const pid = m[slot];
-                  const isWinner = m.winnerId && m.winnerId === pid;
+                  const isWinner = !!m.winnerId && m.winnerId === pid;
                   const canClick = pid && m.p1Id && m.p2Id && !m.winnerId;
                   return (
                     <div
                       key={slot}
                       className={`tk-bslot ${isWinner ? "winner" : ""} ${!pid ? "empty" : ""}`}
-                      onClick={() => canClick && onReport(m.id, pid)}
+                      onClick={() => canClick && pid && onReport(m.id, pid)}
                     >
                       <span>{nameOf(playerMap, pid)}</span>
                       {isWinner && <span style={{ fontSize: 10 }}>W</span>}

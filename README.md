@@ -7,9 +7,10 @@ Tournament pairing/bracket engine for a TCG store platform. See
 
 ```bash
 npm install
-npm run dev      # start dev server
-npm run test     # run engine tests (vitest)
-npm run build    # production build
+npm run dev        # start dev server
+npm run test       # run engine tests (vitest)
+npm run typecheck  # tsc --noEmit
+npm run build      # typecheck + production build
 ```
 
 ## Structure
@@ -17,12 +18,12 @@ npm run build    # production build
 ```
 src/
   engine/
-    tournament.js        # pure Swiss + bracket logic, no React dependency
-    tournament.test.js    # vitest suite
+    tournament.ts         # pure Swiss + bracket logic + domain types, no React dependency
+    tournament.test.ts    # vitest suite
   components/
-    PairingTicket.jsx
-    StandingsTable.jsx
-    BracketView.jsx
-  App.jsx                 # wires engine to UI
+    PairingTicket.tsx
+    StandingsTable.tsx
+    BracketView.tsx
+  App.tsx                 # wires engine to UI
   styles/tokens.css
 ```

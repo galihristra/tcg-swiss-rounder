@@ -6,22 +6,23 @@ import {
   reportSingleEliminationResult,
   createDoubleEliminationBracket,
   reportDoubleEliminationResult,
-} from "./tournament.js";
+} from "./tournament";
+import type { Player, SwissMatch } from "./tournament";
 
-function makePlayers(n) {
+function makePlayers(n: number): Player[] {
   return Array.from({ length: n }, (_, i) => ({ id: `p${i + 1}`, name: `Player ${i + 1}` }));
 }
 
 describe("Swiss pairing", () => {
   it.each([4, 5, 6, 7, 8, 16])("pairs every player exactly once per round for n=%i", (n) => {
     const players = makePlayers(n);
-    let matches = [];
+    const matches: SwissMatch[] = [];
     const rounds = Math.ceil(Math.log2(n)) + 1;
-    const byeLog = {};
+    const byeLog: Record<string, number> = {};
 
     for (let r = 1; r <= rounds; r++) {
       const { pairings, byePlayerId } = generateSwissPairings(players, matches, r);
-      const seen = new Set();
+      const seen = new Set<string>();
       pairings.forEach(({ p1Id, p2Id }) => {
         expect(seen.has(p1Id)).toBe(false);
         expect(seen.has(p2Id)).toBe(false);
@@ -65,7 +66,7 @@ describe("Single elimination", () => {
     }
     const final = bracket.rounds[bracket.rounds.length - 1][0];
     expect(final.winnerId).toBeTruthy();
-    expect(ids.has(final.winnerId)).toBe(true);
+    expect(ids.has(final.winnerId!)).toBe(true);
   });
 });
 
@@ -92,13 +93,13 @@ describe("Double elimination", () => {
       if (pending.length === 0) break;
       for (const m of pending) {
         const winner = Math.random() < 0.5 ? m.p1Id : m.p2Id;
-        bracket = reportDoubleEliminationResult(bracket, m.id, winner);
+        bracket = reportDoubleEliminationResult(bracket, m.id, winner!);
       }
     }
 
     const champion = bracket.grandFinalReset.active ? bracket.grandFinalReset.winnerId : bracket.grandFinal.winnerId;
     expect(champion).toBeTruthy();
-    expect(ids.has(champion)).toBe(true);
+    expect(ids.has(champion!)).toBe(true);
 
     const seatedCount = bracket.wbRounds[0].reduce((sum, m) => sum + (m.p1Id ? 1 : 0) + (m.p2Id ? 1 : 0), 0);
     expect(seatedCount).toBe(n);

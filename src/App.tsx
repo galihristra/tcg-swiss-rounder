@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useCallback } from "react";
+import { useState, useMemo, useCallback } from "react";
 import {
   computeStandings,
   generateSwissPairings,
@@ -6,14 +6,25 @@ import {
   reportSingleEliminationResult,
   createDoubleEliminationBracket,
   reportDoubleEliminationResult,
-} from "./engine/tournament.js";
-import PairingTicket from "./components/PairingTicket.jsx";
-import StandingsTable from "./components/StandingsTable.jsx";
-import BracketView, { nameOf } from "./components/BracketView.jsx";
+} from "./engine/tournament";
+import type {
+  Player,
+  SwissMatch,
+  SingleEliminationBracket,
+  DoubleEliminationBracket,
+} from "./engine/tournament";
+import PairingTicket from "./components/PairingTicket";
+import StandingsTable from "./components/StandingsTable";
+import BracketView, { nameOf } from "./components/BracketView";
+
+type Mode = "swiss" | "single" | "double";
 
 const STARTER_NAMES = ["Ashblade", "Nightloom", "Ironvale", "Ferrostorm", "Duskwarren", "Glasswing", "Rootcaller", "Emberfang", "Coldmarch", "Thistledown", "Wraithcoin", "Sablewatch"];
 
-function shuffle(arr) {
+const MODE_TABS: [Mode, string][] = [["swiss", "Swiss"], ["single", "Single Elim"], ["double", "Double Elim"]];
+const SLOTS = ["p1Id", "p2Id"] as const;
+
+function shuffle<T>(arr: T[]): T[] {
   const a = [...arr];
   for (let i = a.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
@@ -21,26 +32,26 @@ function shuffle(arr) {
   }
   return a;
 }
-function seedPlayers(n) {
+function seedPlayers(n: number): Player[] {
   const names = shuffle(STARTER_NAMES).slice(0, n);
   return names.map((name, i) => ({ id: `p${i + 1}-${Math.random().toString(36).slice(2, 6)}`, name, seed: i + 1 }));
 }
-function singleRoundLabels(n) {
-  const labels = [];
+function singleRoundLabels(n: number): string[] {
+  const labels: string[] = [];
   for (let r = n; r >= 1; r--) labels.push(r === 1 ? "Final" : r === 2 ? "Semifinal" : `Round of ${Math.pow(2, r)}`);
   return labels;
 }
 
 export default function App() {
-  const [players, setPlayers] = useState(() => seedPlayers(8));
+  const [players, setPlayers] = useState<Player[]>(() => seedPlayers(8));
   const [newName, setNewName] = useState("");
-  const [mode, setMode] = useState("swiss");
+  const [mode, setMode] = useState<Mode>("swiss");
 
-  const [matches, setMatches] = useState([]);
+  const [matches, setMatches] = useState<SwissMatch[]>([]);
   const [round, setRound] = useState(0);
 
-  const [singleBracket, setSingleBracket] = useState(null);
-  const [doubleBracket, setDoubleBracket] = useState(null);
+  const [singleBracket, setSingleBracket] = useState<SingleEliminationBracket | null>(null);
+  const [doubleBracket, setDoubleBracket] = useState<DoubleEliminationBracket | null>(null);
 
   const playerMap = useMemo(() => Object.fromEntries(players.map((p) => [p.id, p])), [players]);
   const recommendedRounds = Math.max(3, Math.ceil(Math.log2(Math.max(players.length, 2))));
@@ -51,7 +62,7 @@ export default function App() {
     setPlayers((ps) => [...ps, { id: `p-${Math.random().toString(36).slice(2, 9)}`, name, seed: ps.length + 1 }]);
     setNewName("");
   };
-  const removePlayer = (id) => setPlayers((ps) => ps.filter((p) => p.id !== id));
+  const removePlayer = (id: string) => setPlayers((ps) => ps.filter((p) => p.id !== id));
 
   const roundMatches = matches.filter((m) => m.round === round);
   const roundComplete = round > 0 && roundMatches.every((m) => m.isBye || m.result);
@@ -59,13 +70,13 @@ export default function App() {
   const startRound = () => {
     const nextRound = round + 1;
     const { pairings, byePlayerId } = generateSwissPairings(players, matches, nextRound);
-    const newMatches = pairings.map((p) => ({ ...p, round: nextRound, result: null, p1Games: 0, p2Games: 0 }));
+    const newMatches: SwissMatch[] = pairings.map((p) => ({ ...p, round: nextRound, result: null, p1Games: 0, p2Games: 0 }));
     if (byePlayerId) newMatches.push({ isBye: true, p1Id: byePlayerId, round: nextRound });
     setMatches((m) => [...m, ...newMatches]);
     setRound(nextRound);
   };
 
-  const reportSwiss = (targetMatch, patch) => {
+  const reportSwiss = (targetMatch: SwissMatch, patch: Partial<SwissMatch>) => {
     setMatches((all) => all.map((m) => (m === targetMatch ? { ...m, ...patch } : m)));
   };
 
@@ -74,11 +85,11 @@ export default function App() {
   const genSingle = () => setSingleBracket(createSingleEliminationBracket(players));
   const genDouble = () => setDoubleBracket(createDoubleEliminationBracket(players));
 
-  const reportSingle = useCallback((matchId, winnerId) => {
-    setSingleBracket((b) => reportSingleEliminationResult(b, matchId, winnerId));
+  const reportSingle = useCallback((matchId: string, winnerId: string) => {
+    setSingleBracket((b) => (b ? reportSingleEliminationResult(b, matchId, winnerId) : b));
   }, []);
-  const reportDouble = useCallback((matchId, winnerId) => {
-    setDoubleBracket((b) => reportDoubleEliminationResult(b, matchId, winnerId));
+  const reportDouble = useCallback((matchId: string, winnerId: string) => {
+    setDoubleBracket((b) => (b ? reportDoubleEliminationResult(b, matchId, winnerId) : b));
   }, []);
 
   return (
@@ -89,7 +100,7 @@ export default function App() {
           <small>Pairing &amp; bracket engine — reference implementation</small>
         </div>
         <div className="tk-tabs">
-          {[["swiss", "Swiss"], ["single", "Single Elim"], ["double", "Double Elim"]].map(([k, label]) => (
+          {MODE_TABS.map(([k, label]) => (
             <button key={k} className={`tk-tab ${mode === k ? "active" : ""}`} onClick={() => setMode(k)}>
               {label}
             </button>
@@ -166,7 +177,7 @@ export default function App() {
                     key={i}
                     index={i}
                     p1={playerMap[m.p1Id]}
-                    p2={playerMap[m.p2Id]}
+                    p2={playerMap[m.p2Id!]}
                     match={m}
                     onReport={(patch) => reportSwiss(m, patch)}
                   />
@@ -250,20 +261,20 @@ export default function App() {
                     Losers' Bracket
                   </h3>
                   <div className="tk-lbwrap">
-                    {doubleBracket.lbRounds.map((round, ri) => (
+                    {doubleBracket.lbRounds.map((lbRound, ri) => (
                       <div className="tk-lbcol" key={ri}>
                         <div className="tk-bcol-label">LB {ri + 1}</div>
-                        {round.matches.map((m) => (
+                        {lbRound.matches.map((m) => (
                           <div className="tk-bmatch" key={m.id} style={{ position: "static", marginBottom: 8 }}>
-                            {["p1Id", "p2Id"].map((slot) => {
+                            {SLOTS.map((slot) => {
                               const pid = m[slot];
-                              const isWinner = m.winnerId && m.winnerId === pid;
+                              const isWinner = !!m.winnerId && m.winnerId === pid;
                               const canClick = pid && m.p1Id && m.p2Id && !m.winnerId;
                               return (
                                 <div
                                   key={slot}
                                   className={`tk-bslot ${isWinner ? "winner" : ""} ${!pid ? "empty" : ""}`}
-                                  onClick={() => canClick && reportDouble(m.id, pid)}
+                                  onClick={() => canClick && pid && reportDouble(m.id, pid)}
                                 >
                                   <span>{nameOf(playerMap, pid)}</span>
                                   {isWinner && <span style={{ fontSize: 10 }}>W</span>}
@@ -283,7 +294,7 @@ export default function App() {
                   </h3>
                   <div className="tk-gf">
                     <div className="tk-bmatch">
-                      {["p1Id", "p2Id"].map((slot) => {
+                      {SLOTS.map((slot) => {
                         const pid = doubleBracket.grandFinal[slot];
                         const isWinner = doubleBracket.grandFinal.winnerId === pid;
                         const canClick = pid && doubleBracket.grandFinal.p1Id && doubleBracket.grandFinal.p2Id && !doubleBracket.grandFinal.winnerId;
@@ -291,7 +302,7 @@ export default function App() {
                           <div
                             key={slot}
                             className={`tk-bslot ${isWinner ? "winner" : ""} ${!pid ? "empty" : ""}`}
-                            onClick={() => canClick && reportDouble("GF", pid)}
+                            onClick={() => canClick && pid && reportDouble("GF", pid)}
                           >
                             <span>{nameOf(playerMap, pid)}</span>
                             {isWinner && <span style={{ fontSize: 10 }}>W</span>}
@@ -304,7 +315,7 @@ export default function App() {
                         <div style={{ fontSize: 10, color: "#d6a93c", padding: "5px 9px", borderBottom: "1px solid #2e313a" }}>
                           BRACKET RESET
                         </div>
-                        {["p1Id", "p2Id"].map((slot) => {
+                        {SLOTS.map((slot) => {
                           const pid = doubleBracket.grandFinalReset[slot];
                           const isWinner = doubleBracket.grandFinalReset.winnerId === pid;
                           const canClick =
@@ -313,7 +324,7 @@ export default function App() {
                             <div
                               key={slot}
                               className={`tk-bslot ${isWinner ? "winner" : ""} ${!pid ? "empty" : ""}`}
-                              onClick={() => canClick && reportDouble("GF2", pid)}
+                              onClick={() => canClick && pid && reportDouble("GF2", pid)}
                             >
                               <span>{nameOf(playerMap, pid)}</span>
                               {isWinner && <span style={{ fontSize: 10 }}>W</span>}

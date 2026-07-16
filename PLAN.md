@@ -31,8 +31,9 @@ rules for sanctioned play) — flag it before then.
 
 ## Architecture decisions already made
 
-- **Vite + React**, plain JS (no TypeScript) — matches the rest of the
-  stack (React Native, Nuxt).
+- **Vite + React + TypeScript** (strict mode). Originally plain JS; migrated
+  to TS before Phase 2 so the engine's domain types (`Player`, `SwissMatch`,
+  bracket shapes in `tournament.ts`) can back the persistence layer directly.
 - Engine is framework-agnostic on purpose — same functions should be
   reusable from a React Native "run the floor" companion app later without
   rewriting pairing logic.

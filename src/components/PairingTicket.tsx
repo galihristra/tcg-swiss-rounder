@@ -1,6 +1,12 @@
-import React, { useState } from "react";
+import { useState } from "react";
+import type { Player, SwissMatch, MatchResult } from "../engine/tournament";
 
-function GameToggle({ close, setClose }) {
+interface GameToggleProps {
+  close: boolean;
+  setClose: (value: boolean) => void;
+}
+
+function GameToggle({ close, setClose }: GameToggleProps) {
   return (
     <label className="tk-scoretoggle">
       <input type="checkbox" checked={close} onChange={(e) => setClose(e.target.checked)} />
@@ -9,11 +15,19 @@ function GameToggle({ close, setClose }) {
   );
 }
 
-export default function PairingTicket({ index, p1, p2, match, onReport }) {
+interface PairingTicketProps {
+  index: number;
+  p1: Player;
+  p2: Player;
+  match: SwissMatch;
+  onReport: (patch: Partial<SwissMatch>) => void;
+}
+
+export default function PairingTicket({ index, p1, p2, match, onReport }: PairingTicketProps) {
   const [close, setClose] = useState(false);
   const decided = !!match.result;
 
-  const report = (winner) => {
+  const report = (winner: MatchResult) => {
     if (winner === "draw") return onReport({ result: "draw", p1Games: 1, p2Games: 1 });
     const loserGames = close ? 1 : 0;
     onReport(
