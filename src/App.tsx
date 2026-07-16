@@ -19,23 +19,9 @@ import BracketView, { nameOf } from "./components/BracketView";
 
 type Mode = "swiss" | "single" | "double";
 
-const STARTER_NAMES = ["Ashblade", "Nightloom", "Ironvale", "Ferrostorm", "Duskwarren", "Glasswing", "Rootcaller", "Emberfang", "Coldmarch", "Thistledown", "Wraithcoin", "Sablewatch"];
-
 const MODE_TABS: [Mode, string][] = [["swiss", "Swiss"], ["single", "Single Elim"], ["double", "Double Elim"]];
 const SLOTS = ["p1Id", "p2Id"] as const;
 
-function shuffle<T>(arr: T[]): T[] {
-  const a = [...arr];
-  for (let i = a.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [a[i], a[j]] = [a[j], a[i]];
-  }
-  return a;
-}
-function seedPlayers(n: number): Player[] {
-  const names = shuffle(STARTER_NAMES).slice(0, n);
-  return names.map((name, i) => ({ id: `p${i + 1}-${Math.random().toString(36).slice(2, 6)}`, name, seed: i + 1 }));
-}
 function singleRoundLabels(n: number): string[] {
   const labels: string[] = [];
   for (let r = n; r >= 1; r--) labels.push(r === 1 ? "Final" : r === 2 ? "Semifinal" : `Round of ${Math.pow(2, r)}`);
@@ -43,12 +29,14 @@ function singleRoundLabels(n: number): string[] {
 }
 
 export default function App() {
-  const [players, setPlayers] = useState<Player[]>(() => seedPlayers(8));
+  const [players, setPlayers] = useState<Player[]>([]);
   const [newName, setNewName] = useState("");
   const [mode, setMode] = useState<Mode>("swiss");
 
   const [matches, setMatches] = useState<SwissMatch[]>([]);
   const [round, setRound] = useState(0);
+  const [roundCount, setRoundCount] = useState(3);
+  const [eventFinished, setEventFinished] = useState(false);
 
   const [singleBracket, setSingleBracket] = useState<SingleEliminationBracket | null>(null);
   const [doubleBracket, setDoubleBracket] = useState<DoubleEliminationBracket | null>(null);
@@ -74,6 +62,13 @@ export default function App() {
     if (byePlayerId) newMatches.push({ isBye: true, p1Id: byePlayerId, round: nextRound });
     setMatches((m) => [...m, ...newMatches]);
     setRound(nextRound);
+  };
+
+  const finishEvent = () => setEventFinished(true);
+  const resetEvent = () => {
+    setMatches([]);
+    setRound(0);
+    setEventFinished(false);
   };
 
   const reportSwiss = (targetMatch: SwissMatch, patch: Partial<SwissMatch>) => {
@@ -135,66 +130,109 @@ export default function App() {
             </button>
           </div>
           {mode === "swiss" && (
-            <p className="tk-suggest">
-              Suggested length for {players.length} players: <b className="tk-gold">{recommendedRounds} rounds</b>.
-            </p>
+            <div className="tk-rounds-setting">
+              <label htmlFor="tk-round-count">Rounds</label>
+              <input
+                id="tk-round-count"
+                type="number"
+                min={1}
+                value={roundCount}
+                disabled={round > 0 || eventFinished}
+                onChange={(e) => {
+                  const v = parseInt(e.target.value, 10);
+                  if (!Number.isNaN(v) && v >= 1) setRoundCount(v);
+                }}
+              />
+              <span className="tk-hint">suggested {recommendedRounds}</span>
+            </div>
           )}
         </div>
 
         <div>
           {mode === "swiss" && (
             <div className="tk-panel">
-              <div className="tk-roundbar">
-                <div className="tk-roundlabel">
-                  {round === 0 ? (
-                    "Not started"
-                  ) : (
-                    <>
-                      Round <span className="tk-gold">{round}</span> of {recommendedRounds}+
-                    </>
-                  )}
-                </div>
-                {round === 0 || roundComplete ? (
-                  <button className="tk-btn" disabled={players.length < 2} onClick={startRound}>
-                    {round === 0 ? "Start Round 1" : `Start Round ${round + 1}`}
-                  </button>
-                ) : (
-                  <span className="tk-hint">Report all results to continue</span>
-                )}
-              </div>
-
-              {round === 0 && (
-                <div className="tk-empty">
-                  Add players, then start round 1. Pairings are randomized for round 1, and score-based (no repeat matchups
-                  where possible) after that.
-                </div>
-              )}
-
-              {roundMatches
-                .filter((m) => !m.isBye)
-                .map((m, i) => (
-                  <PairingTicket
-                    key={i}
-                    index={i}
-                    p1={playerMap[m.p1Id]}
-                    p2={playerMap[m.p2Id!]}
-                    match={m}
-                    onReport={(patch) => reportSwiss(m, patch)}
-                  />
-                ))}
-              {roundMatches
-                .filter((m) => m.isBye)
-                .map((m, i) => (
-                  <div className="tk-bye" key={`bye-${i}`}>
-                    {playerMap[m.p1Id]?.name} receives the bye this round (counted as a win).
+              {eventFinished ? (
+                <>
+                  <div className="tk-roundbar">
+                    <div className="tk-roundlabel">Event complete</div>
+                    <button className="tk-btn ghost" onClick={resetEvent}>
+                      New event
+                    </button>
                   </div>
-                ))}
-
-              {matches.length > 0 && (
-                <div className="tk-standings-block">
-                  <h3 className="tk-section-title">Standings</h3>
+                  <div className="tk-champion">
+                    🏆 <b className="tk-gold">{standings[0]?.name ?? "—"}</b> wins the event
+                  </div>
+                  <h3 className="tk-section-title">Final Standings</h3>
                   <StandingsTable rows={standings} />
-                </div>
+                </>
+              ) : (
+                <>
+                  <div className="tk-roundbar">
+                    <div className="tk-roundlabel">
+                      {round === 0 ? (
+                        "Not started"
+                      ) : (
+                        <>
+                          Round <span className="tk-gold">{round}</span> of {roundCount}
+                        </>
+                      )}
+                    </div>
+                    {(() => {
+                      if (round === 0)
+                        return (
+                          <button className="tk-btn" disabled={players.length < 2} onClick={startRound}>
+                            Start Round 1
+                          </button>
+                        );
+                      if (!roundComplete) return <span className="tk-hint">Report all results to continue</span>;
+                      if (round < roundCount)
+                        return (
+                          <button className="tk-btn" onClick={startRound}>
+                            Start Round {round + 1}
+                          </button>
+                        );
+                      return (
+                        <button className="tk-btn" onClick={finishEvent}>
+                          Finish event
+                        </button>
+                      );
+                    })()}
+                  </div>
+
+                  {round === 0 && (
+                    <div className="tk-empty">
+                      Add players, then start round 1. Pairings are randomized for round 1, and score-based (no repeat
+                      matchups where possible) after that.
+                    </div>
+                  )}
+
+                  {roundMatches
+                    .filter((m) => !m.isBye)
+                    .map((m, i) => (
+                      <PairingTicket
+                        key={i}
+                        index={i}
+                        p1={playerMap[m.p1Id]}
+                        p2={playerMap[m.p2Id!]}
+                        match={m}
+                        onReport={(patch) => reportSwiss(m, patch)}
+                      />
+                    ))}
+                  {roundMatches
+                    .filter((m) => m.isBye)
+                    .map((m, i) => (
+                      <div className="tk-bye" key={`bye-${i}`}>
+                        {playerMap[m.p1Id]?.name} receives the bye this round (counted as a win).
+                      </div>
+                    ))}
+
+                  {matches.length > 0 && (
+                    <div className="tk-standings-block">
+                      <h3 className="tk-section-title">Standings</h3>
+                      <StandingsTable rows={standings} />
+                    </div>
+                  )}
+                </>
               )}
             </div>
           )}

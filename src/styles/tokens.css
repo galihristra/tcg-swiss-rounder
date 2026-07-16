@@ -1,3 +1,4 @@
+html, body { margin:0; padding:0; background:#121316; }
 .tk-root { --bg:#121316; --panel:#1b1d22; --card:#23262d; --border:#2e313a; --text:#edeef2;
   --muted:#8a8d98; --gold:#d6a93c; --gold-dim:#8a713a; --win:#4f9d6e; --loss:#c1584a; --draw:#6e7480;
   background:var(--bg); color:var(--text); min-height:100vh; font-family:'Inter',system-ui,sans-serif;
@@ -77,6 +78,11 @@
 .tk-reset-label{ font-size:10px; color:var(--gold); padding:5px 9px; border-bottom:1px solid var(--border); }
 .tk-bmatch--static{ position:static; margin-bottom:8px; }
 .tk-bracket-lines{ position:absolute; top:24px; left:0; }
+.tk-rounds-setting{ display:flex; align-items:center; gap:8px; margin-top:14px; }
+.tk-rounds-setting label{ font-family:'Barlow Condensed',sans-serif; text-transform:uppercase; letter-spacing:0.04em; font-size:12px; color:var(--muted); }
+.tk-rounds-setting input{ width:52px; background:var(--card); border:1px solid var(--border); border-radius:6px; color:var(--text); padding:5px 8px; font-size:13px; font-family:'JetBrains Mono',monospace; }
+.tk-rounds-setting input:disabled{ opacity:0.5; cursor:not-allowed; }
+.tk-champion{ font-size:18px; margin:14px 0; }
 
 /* ============ Responsive: tablet & mobile ============ */
 /* Single-column below ~800px covers portrait tablets and phones (see .tk-layout above). */
