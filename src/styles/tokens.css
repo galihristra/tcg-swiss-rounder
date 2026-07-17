@@ -230,7 +230,7 @@ body {
   background: rgba(214, 169, 60, 0.12);
 }
 .tk-name {
-  font-size: 14.5px;
+  font-size: 16.5px;
 }
 .tk-vs {
   color: var(--muted);
@@ -300,6 +300,32 @@ body {
 }
 .tk-standings tr:first-child td {
   color: var(--gold);
+}
+.tk-standings--compact th,
+.tk-standings--compact td {
+  font-size: 20.5px;
+}
+.tk-standings-toolbar {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 4px;
+}
+.tk-standings-toggle {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  font-size: 11px;
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--muted);
+  border-radius: 6px;
+  padding: 4px 10px;
+  cursor: pointer;
+}
+.tk-standings-toggle:hover {
+  color: var(--gold);
+  border-color: var(--gold-dim);
 }
 .tk-bracket-scroll {
   overflow-x: auto;
@@ -840,10 +866,13 @@ body {
   flex-shrink: 0;
 }
 .tk-deck-sprite-mini {
-  width: 20px;
-  height: 20px;
+  width: 40px;
+  height: 40px;
   vertical-align: middle;
   margin-right: 2px;
+}
+.tk-deck-sprites {
+  margin-right: 10px;
 }
 .tk-combobox {
   flex: 1;
