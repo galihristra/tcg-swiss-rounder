@@ -30,7 +30,10 @@ export default function EventPhotos({ eventId, isAdmin }: EventPhotosProps) {
 
   const closeLightbox = useCallback(() => setLightboxIndex(null), []);
   const showPrev = useCallback(
-    () => setLightboxIndex((i) => (i === null ? i : (i - 1 + photos.length) % photos.length)),
+    () =>
+      setLightboxIndex((i) =>
+        i === null ? i : (i - 1 + photos.length) % photos.length,
+      ),
     [photos.length],
   );
   const showNext = useCallback(
@@ -77,7 +80,10 @@ export default function EventPhotos({ eventId, isAdmin }: EventPhotosProps) {
       await deleteEventPhoto(photo);
       setPhotos((prev) => prev.filter((p) => p.id !== photo.id));
     } catch (e) {
-      setErrors((prev) => [...prev, e instanceof Error ? e.message : String(e)]);
+      setErrors((prev) => [
+        ...prev,
+        e instanceof Error ? e.message : String(e),
+      ]);
     } finally {
       setDeletingId(null);
     }

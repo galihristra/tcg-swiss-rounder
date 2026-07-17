@@ -4,3 +4,6 @@ coverage
 *.log
 pnpm-lock.yaml
 package-lock.json
+public
+*.md
+scripts
