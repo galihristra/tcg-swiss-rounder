@@ -67,6 +67,9 @@ export default function PastEventsView({
               viewingArchive.state.players,
               viewingArchive.state.matches,
             )}
+            playerMap={Object.fromEntries(
+              viewingArchive.state.players.map((p) => [p.id, p]),
+            )}
           />
           <h3 className="tk-section-title">Photos</h3>
           <EventPhotos eventId={viewingArchive.id} isAdmin={isAdmin} />

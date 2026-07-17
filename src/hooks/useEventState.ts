@@ -148,6 +148,22 @@ export function useEventState() {
     setPlayers((ps) => ps.filter((p) => p.id !== id));
   const renamePlayer = (id: string, name: string) =>
     setPlayers((ps) => ps.map((p) => (p.id === id ? { ...p, name } : p)));
+  const setPlayerDeck = (
+    id: string,
+    deckPokemon1: string | null,
+    deckPokemon2: string | null,
+  ) =>
+    setPlayers((ps) =>
+      ps.map((p) =>
+        p.id === id
+          ? {
+              ...p,
+              deckPokemon1: deckPokemon1 ?? undefined,
+              deckPokemon2: deckPokemon2 ?? undefined,
+            }
+          : p,
+      ),
+    );
 
   const roundMatches = matches.filter((m) => m.round === round);
   const roundComplete =
@@ -232,6 +248,7 @@ export function useEventState() {
     addPlayer,
     removePlayer,
     renamePlayer,
+    setPlayerDeck,
     rosterLocked,
     playerMap,
 

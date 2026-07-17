@@ -8,6 +8,7 @@ import SwissPanel from './components/SwissPanel';
 import SingleElimPanel from './components/SingleElimPanel';
 import DoubleElimPanel from './components/DoubleElimPanel';
 import PastEventsView from './components/PastEventsView';
+import DeckEditModal from './components/DeckEditModal';
 
 const MODE_TABS: [Mode, string][] = [
   ['swiss', 'Swiss'],
@@ -23,6 +24,12 @@ export default function App() {
 
   const [view, setView] = useState<View>('event');
   const [showCancelConfirm, setShowCancelConfirm] = useState(false);
+  const [editingDeckPlayerId, setEditingDeckPlayerId] = useState<string | null>(
+    null,
+  );
+  const editingDeckPlayer = editingDeckPlayerId
+    ? (ev.playerMap[editingDeckPlayerId] ?? null)
+    : null;
 
   const confirmCancelEvent = async () => {
     await ev.resetEvent();
@@ -95,6 +102,7 @@ export default function App() {
             onRenamePlayer={ev.renamePlayer}
             onRemovePlayer={ev.removePlayer}
             onAddPlayer={ev.addPlayer}
+            onEditDeck={setEditingDeckPlayerId}
             rosterLocked={ev.rosterLocked}
             mode={ev.mode}
             roundsInput={ev.roundsInput}
@@ -175,6 +183,20 @@ export default function App() {
             </div>
           </div>
         </div>
+      )}
+
+      {editingDeckPlayer && (
+        <DeckEditModal
+          key={editingDeckPlayer.id}
+          open
+          onClose={() => setEditingDeckPlayerId(null)}
+          eventName={ev.eventName}
+          player={editingDeckPlayer}
+          onSave={(deckPokemon1, deckPokemon2) => {
+            ev.setPlayerDeck(editingDeckPlayer.id, deckPokemon1, deckPokemon2);
+            setEditingDeckPlayerId(null);
+          }}
+        />
       )}
     </div>
   );
