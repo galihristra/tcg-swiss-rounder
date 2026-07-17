@@ -97,7 +97,11 @@ export default function PastEventsView({
                 <div className="tk-archive-name">{ev.name}</div>
                 <div className="tk-archive-meta">
                   {ev.state.players.length} players · {champion} ·{' '}
-                  {new Date(ev.updated_at).toLocaleDateString()}
+                  {new Date(ev.updated_at).toLocaleDateString('id-ID', {
+                    day: 'numeric',
+                    month: 'long',
+                    year: 'numeric',
+                  })}
                 </div>
               </button>
             );
