@@ -303,7 +303,7 @@ body {
 }
 .tk-standings--compact th,
 .tk-standings--compact td {
-  font-size: 20.5px;
+  font-size: 16.5px;
 }
 .tk-standings-toolbar {
   display: flex;

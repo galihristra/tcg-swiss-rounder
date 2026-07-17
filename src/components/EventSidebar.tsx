@@ -98,12 +98,8 @@ export default function EventSidebar({
                 Deck
               </button>
             )}
-            {isAdmin && (
-              <button
-                className="tk-x"
-                disabled={rosterLocked}
-                onClick={() => onRemovePlayer(p.id)}
-              >
+            {isAdmin && !rosterLocked && (
+              <button className="tk-x" onClick={() => onRemovePlayer(p.id)}>
                 ×
               </button>
             )}
