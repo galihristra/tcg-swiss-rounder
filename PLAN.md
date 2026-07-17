@@ -102,21 +102,20 @@ rounds, edit the roster, etc. Phase 3 splits this into two layers:
 'authenticated'`. A determined participant poking the API directly still
   can't write.
 
-### Phase 4 — Live/shared views
+### Phase 4 — Live/shared views — dropped
 
-- Player-facing "what table am I at" / standings view that updates
-  without the organizer manually refreshing (polling is fine to start;
-  websockets only if it's justified). Phase 3's read-only participant view
-  is the foundation this builds on.
-- Consider Supabase Realtime subscriptions on the `events` row now that
-  there's a reason for other devices to watch it live.
+Not building this. Matches take 10–30 min each, so players only need to
+check standings/pairings after their own match finishes — manual refresh
+on Phase 3's read-only participant view is enough. Revisit only if event
+sizes/formats change this assumption (e.g. very fast rounds).
 
-### Phase 5 — Polish
+### Phase 5 — Polish (next)
 
-- Print/export pairings and standings (many stores still post a paper
-  sheet at the table).
 - Tiebreaker display detail — show the breakdown, not just the number,
   so a player can see _why_ they placed where they did.
+
+(Print/export of pairings and standings was considered and dropped — not
+needed.)
 
 ## Immediate next steps for this session
 
