@@ -63,7 +63,7 @@ export default function DeckEditModal({
     <Modal
       open={open}
       onClose={onClose}
-      title={`Edit your deck for ${eventName}`}
+      title={`Edit ${player.name}'s deck for ${eventName}`}
       className="tk-modal--wide"
     >
       <div className="tk-deck-slots">
