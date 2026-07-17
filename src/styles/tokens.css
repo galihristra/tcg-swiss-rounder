@@ -327,6 +327,48 @@ body {
   color: var(--gold);
   border-color: var(--gold-dim);
 }
+.tk-standings-row--expandable {
+  cursor: pointer;
+}
+.tk-standings-row--expandable:hover td {
+  background: var(--surface-hover, rgba(255, 255, 255, 0.03));
+}
+.tk-standings-caret {
+  color: var(--muted);
+  font-size: 10px;
+}
+.tk-standings-detail-row td {
+  padding: 0 10px 10px;
+  border-bottom: 1px solid var(--border);
+}
+table.tk-standings-detail {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 2px;
+}
+table.tk-standings-detail th {
+  text-align: left;
+  font-family: 'Barlow Condensed', sans-serif;
+  text-transform: uppercase;
+  font-size: 10px;
+  letter-spacing: 0.05em;
+  color: var(--muted);
+  padding: 4px 8px;
+}
+table.tk-standings-detail td {
+  padding: 4px 8px;
+  font-size: 12.5px;
+  border-bottom: none;
+}
+table.tk-standings-detail td.tk-num {
+  font-family: 'JetBrains Mono', monospace;
+  color: var(--muted);
+}
+div.tk-standings-detail {
+  padding: 4px 8px;
+  color: var(--muted);
+  font-size: 12.5px;
+}
 .tk-bracket-scroll {
   overflow-x: auto;
   padding: 6px 0 16px;

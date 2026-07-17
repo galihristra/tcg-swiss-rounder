@@ -25,6 +25,12 @@ export interface SwissMatch {
   isBye?: boolean;
 }
 
+export interface OpponentBreakdown {
+  id: string;
+  mw: number;
+  gw: number;
+}
+
 export interface StandingRow {
   id: string;
   name: string;
@@ -37,6 +43,7 @@ export interface StandingRow {
   gw: number;
   omw: number;
   ogw: number;
+  opponents: OpponentBreakdown[];
 }
 
 export interface SwissPairing {
@@ -231,6 +238,7 @@ function computeStandings(
       gw: gw(p.id),
       omw,
       ogw,
+      opponents: opp.map((oid) => ({ id: oid, mw: mw(oid), gw: gw(oid) })),
     };
   });
 
