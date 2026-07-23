@@ -75,8 +75,8 @@ export default function App() {
     <div className="tk-root">
       <div className="tk-header">
         <div className="tk-title">
-          Event System
-          <small>Pairing &amp; bracket engine — reference implementation</small>
+          Pokemon TCG Event Manager
+          <small>Pairing &amp; Bracket Engine</small>
         </div>
         <div className="tk-headright">
           <div className="tk-tabs">
