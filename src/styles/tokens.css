@@ -94,6 +94,38 @@ body {
   .tk-layout {
     grid-template-columns: 1fr;
   }
+  /* Active event: lead with pairings/standings, drop the roster below it. */
+  .tk-layout--active > *:nth-child(1) {
+    order: 2;
+  }
+  .tk-layout--active > *:nth-child(2) {
+    order: 1;
+  }
+  /* Collapsed roster shows only its header; desktop always shows the full list. */
+  .tk-panel.is-collapsed .tk-roster-list {
+    display: none;
+  }
+  .tk-roster-caret {
+    display: inline;
+  }
+}
+/* Roster header toggle — full-width, styled like the plain heading it replaces. */
+.tk-roster-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 0;
+  background: none;
+  border: 0;
+  color: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+.tk-roster-caret {
+  display: none;
+  color: var(--muted);
+  font-size: 13px;
 }
 .tk-panel {
   background: var(--panel);
