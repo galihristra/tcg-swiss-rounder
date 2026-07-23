@@ -2,6 +2,8 @@ import { useState } from 'react';
 import { useAdminSession } from './hooks/useAdminSession';
 import { useScrollLock } from './hooks/useScrollLock';
 import { useEventState } from './hooks/useEventState';
+import { useTheme } from './hooks/useTheme';
+import ThemeToggle from './components/ThemeToggle';
 import type { Mode } from './lib/eventStore';
 import AdminLogin from './components/AdminLogin';
 import EventSidebar from './components/EventSidebar';
@@ -21,6 +23,7 @@ type View = 'event' | 'archive';
 
 export default function App() {
   const { session, isAdmin } = useAdminSession();
+  const { theme, toggleTheme } = useTheme();
   const ev = useEventState();
 
   const [view, setView] = useState<View>('event');
@@ -101,6 +104,7 @@ export default function App() {
           >
             Past events
           </button>
+          <ThemeToggle theme={theme} onToggle={toggleTheme} />
           <AdminLogin isAdmin={isAdmin} userSession={session} />
         </div>
       </div>
