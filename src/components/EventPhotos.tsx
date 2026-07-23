@@ -94,20 +94,35 @@ export default function EventPhotos({ eventId, isAdmin }: EventPhotosProps) {
   return (
     <div>
       {isAdmin && (
-        <label className="tk-btn ghost tk-btn--sm">
-          Add Photos
-          <input
-            type="file"
-            accept="image/*"
-            capture="environment"
-            multiple
-            style={{ display: 'none' }}
-            onChange={(e) => {
-              handleFiles(e.target.files);
-              e.target.value = '';
-            }}
-          />
-        </label>
+        <div className="tk-photo-actions">
+          <label className="tk-btn ghost tk-btn--sm">
+            Take Photo
+            <input
+              type="file"
+              accept="image/*"
+              capture="environment"
+              multiple
+              style={{ display: 'none' }}
+              onChange={(e) => {
+                handleFiles(e.target.files);
+                e.target.value = '';
+              }}
+            />
+          </label>
+          <label className="tk-btn ghost tk-btn--sm">
+            Choose from Gallery
+            <input
+              type="file"
+              accept="image/*"
+              multiple
+              style={{ display: 'none' }}
+              onChange={(e) => {
+                handleFiles(e.target.files);
+                e.target.value = '';
+              }}
+            />
+          </label>
+        </div>
       )}
       {uploadingCount > 0 && (
         <div className="tk-hint">

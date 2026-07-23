@@ -690,6 +690,11 @@ div.tk-standings-detail {
   color: var(--muted);
   margin-top: 3px;
 }
+.tk-photo-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
 .tk-photo-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
