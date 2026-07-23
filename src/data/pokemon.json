@@ -5123,5 +5123,490 @@
     "id": "1025",
     "name": "Pecharunt",
     "sprite": "1025.png"
+  },
+  {
+    "id": "10033",
+    "name": "Mega Venusaur",
+    "sprite": "10033.png"
+  },
+  {
+    "id": "10034",
+    "name": "Mega Charizard X",
+    "sprite": "10034.png"
+  },
+  {
+    "id": "10035",
+    "name": "Mega Charizard Y",
+    "sprite": "10035.png"
+  },
+  {
+    "id": "10036",
+    "name": "Mega Blastoise",
+    "sprite": "10036.png"
+  },
+  {
+    "id": "10037",
+    "name": "Mega Alakazam",
+    "sprite": "10037.png"
+  },
+  {
+    "id": "10038",
+    "name": "Mega Gengar",
+    "sprite": "10038.png"
+  },
+  {
+    "id": "10039",
+    "name": "Mega Kangaskhan",
+    "sprite": "10039.png"
+  },
+  {
+    "id": "10040",
+    "name": "Mega Pinsir",
+    "sprite": "10040.png"
+  },
+  {
+    "id": "10041",
+    "name": "Mega Gyarados",
+    "sprite": "10041.png"
+  },
+  {
+    "id": "10042",
+    "name": "Mega Aerodactyl",
+    "sprite": "10042.png"
+  },
+  {
+    "id": "10043",
+    "name": "Mega Mewtwo X",
+    "sprite": "10043.png"
+  },
+  {
+    "id": "10044",
+    "name": "Mega Mewtwo Y",
+    "sprite": "10044.png"
+  },
+  {
+    "id": "10045",
+    "name": "Mega Ampharos",
+    "sprite": "10045.png"
+  },
+  {
+    "id": "10046",
+    "name": "Mega Scizor",
+    "sprite": "10046.png"
+  },
+  {
+    "id": "10047",
+    "name": "Mega Heracross",
+    "sprite": "10047.png"
+  },
+  {
+    "id": "10048",
+    "name": "Mega Houndoom",
+    "sprite": "10048.png"
+  },
+  {
+    "id": "10049",
+    "name": "Mega Tyranitar",
+    "sprite": "10049.png"
+  },
+  {
+    "id": "10050",
+    "name": "Mega Blaziken",
+    "sprite": "10050.png"
+  },
+  {
+    "id": "10051",
+    "name": "Mega Gardevoir",
+    "sprite": "10051.png"
+  },
+  {
+    "id": "10052",
+    "name": "Mega Mawile",
+    "sprite": "10052.png"
+  },
+  {
+    "id": "10053",
+    "name": "Mega Aggron",
+    "sprite": "10053.png"
+  },
+  {
+    "id": "10054",
+    "name": "Mega Medicham",
+    "sprite": "10054.png"
+  },
+  {
+    "id": "10055",
+    "name": "Mega Manectric",
+    "sprite": "10055.png"
+  },
+  {
+    "id": "10056",
+    "name": "Mega Banette",
+    "sprite": "10056.png"
+  },
+  {
+    "id": "10057",
+    "name": "Mega Absol",
+    "sprite": "10057.png"
+  },
+  {
+    "id": "10058",
+    "name": "Mega Garchomp",
+    "sprite": "10058.png"
+  },
+  {
+    "id": "10059",
+    "name": "Mega Lucario",
+    "sprite": "10059.png"
+  },
+  {
+    "id": "10060",
+    "name": "Mega Abomasnow",
+    "sprite": "10060.png"
+  },
+  {
+    "id": "10062",
+    "name": "Mega Latias",
+    "sprite": "10062.png"
+  },
+  {
+    "id": "10063",
+    "name": "Mega Latios",
+    "sprite": "10063.png"
+  },
+  {
+    "id": "10064",
+    "name": "Mega Swampert",
+    "sprite": "10064.png"
+  },
+  {
+    "id": "10065",
+    "name": "Mega Sceptile",
+    "sprite": "10065.png"
+  },
+  {
+    "id": "10066",
+    "name": "Mega Sableye",
+    "sprite": "10066.png"
+  },
+  {
+    "id": "10067",
+    "name": "Mega Altaria",
+    "sprite": "10067.png"
+  },
+  {
+    "id": "10068",
+    "name": "Mega Gallade",
+    "sprite": "10068.png"
+  },
+  {
+    "id": "10069",
+    "name": "Mega Audino",
+    "sprite": "10069.png"
+  },
+  {
+    "id": "10070",
+    "name": "Mega Sharpedo",
+    "sprite": "10070.png"
+  },
+  {
+    "id": "10071",
+    "name": "Mega Slowbro",
+    "sprite": "10071.png"
+  },
+  {
+    "id": "10072",
+    "name": "Mega Steelix",
+    "sprite": "10072.png"
+  },
+  {
+    "id": "10073",
+    "name": "Mega Pidgeot",
+    "sprite": "10073.png"
+  },
+  {
+    "id": "10074",
+    "name": "Mega Glalie",
+    "sprite": "10074.png"
+  },
+  {
+    "id": "10075",
+    "name": "Mega Diancie",
+    "sprite": "10075.png"
+  },
+  {
+    "id": "10076",
+    "name": "Mega Metagross",
+    "sprite": "10076.png"
+  },
+  {
+    "id": "10079",
+    "name": "Mega Rayquaza",
+    "sprite": "10079.png"
+  },
+  {
+    "id": "10087",
+    "name": "Mega Camerupt",
+    "sprite": "10087.png"
+  },
+  {
+    "id": "10088",
+    "name": "Mega Lopunny",
+    "sprite": "10088.png"
+  },
+  {
+    "id": "10089",
+    "name": "Mega Salamence",
+    "sprite": "10089.png"
+  },
+  {
+    "id": "10090",
+    "name": "Mega Beedrill",
+    "sprite": "10090.png"
+  },
+  {
+    "id": "10278",
+    "name": "Mega Clefable",
+    "sprite": "10278.png"
+  },
+  {
+    "id": "10279",
+    "name": "Mega Victreebel",
+    "sprite": "10279.png"
+  },
+  {
+    "id": "10280",
+    "name": "Mega Starmie",
+    "sprite": "10280.png"
+  },
+  {
+    "id": "10281",
+    "name": "Mega Dragonite",
+    "sprite": "10281.png"
+  },
+  {
+    "id": "10282",
+    "name": "Mega Meganium",
+    "sprite": "10282.png"
+  },
+  {
+    "id": "10283",
+    "name": "Mega Feraligatr",
+    "sprite": "10283.png"
+  },
+  {
+    "id": "10284",
+    "name": "Mega Skarmory",
+    "sprite": "10284.png"
+  },
+  {
+    "id": "10285",
+    "name": "Mega Froslass",
+    "sprite": "10285.png"
+  },
+  {
+    "id": "10286",
+    "name": "Mega Emboar",
+    "sprite": "10286.png"
+  },
+  {
+    "id": "10287",
+    "name": "Mega Excadrill",
+    "sprite": "10287.png"
+  },
+  {
+    "id": "10288",
+    "name": "Mega Scolipede",
+    "sprite": "10288.png"
+  },
+  {
+    "id": "10289",
+    "name": "Mega Scrafty",
+    "sprite": "10289.png"
+  },
+  {
+    "id": "10290",
+    "name": "Mega Eelektross",
+    "sprite": "10290.png"
+  },
+  {
+    "id": "10291",
+    "name": "Mega Chandelure",
+    "sprite": "10291.png"
+  },
+  {
+    "id": "10292",
+    "name": "Mega Chesnaught",
+    "sprite": "10292.png"
+  },
+  {
+    "id": "10293",
+    "name": "Mega Delphox",
+    "sprite": "10293.png"
+  },
+  {
+    "id": "10294",
+    "name": "Mega Greninja",
+    "sprite": "10294.png"
+  },
+  {
+    "id": "10295",
+    "name": "Mega Pyroar",
+    "sprite": "10295.png"
+  },
+  {
+    "id": "10296",
+    "name": "Mega Floette",
+    "sprite": "10296.png"
+  },
+  {
+    "id": "10297",
+    "name": "Mega Malamar",
+    "sprite": "10297.png"
+  },
+  {
+    "id": "10298",
+    "name": "Mega Barbaracle",
+    "sprite": "10298.png"
+  },
+  {
+    "id": "10299",
+    "name": "Mega Dragalge",
+    "sprite": "10299.png"
+  },
+  {
+    "id": "10300",
+    "name": "Mega Hawlucha",
+    "sprite": "10300.png"
+  },
+  {
+    "id": "10301",
+    "name": "Mega Zygarde",
+    "sprite": "10301.png"
+  },
+  {
+    "id": "10302",
+    "name": "Mega Drampa",
+    "sprite": "10302.png"
+  },
+  {
+    "id": "10303",
+    "name": "Mega Falinks",
+    "sprite": "10303.png"
+  },
+  {
+    "id": "10304",
+    "name": "Mega Raichu X",
+    "sprite": "10304.png"
+  },
+  {
+    "id": "10305",
+    "name": "Mega Raichu Y",
+    "sprite": "10305.png"
+  },
+  {
+    "id": "10306",
+    "name": "Mega Chimecho",
+    "sprite": "10306.png"
+  },
+  {
+    "id": "10307",
+    "name": "Mega Absol Z",
+    "sprite": "10307.png"
+  },
+  {
+    "id": "10308",
+    "name": "Mega Staraptor",
+    "sprite": "10308.png"
+  },
+  {
+    "id": "10309",
+    "name": "Mega Garchomp Z",
+    "sprite": "10309.png"
+  },
+  {
+    "id": "10310",
+    "name": "Mega Lucario Z",
+    "sprite": "10310.png"
+  },
+  {
+    "id": "10311",
+    "name": "Mega Heatran",
+    "sprite": "10311.png"
+  },
+  {
+    "id": "10312",
+    "name": "Mega Darkrai",
+    "sprite": "10312.png"
+  },
+  {
+    "id": "10313",
+    "name": "Mega Golurk",
+    "sprite": "10313.png"
+  },
+  {
+    "id": "10314",
+    "name": "Mega Meowstic (M)",
+    "sprite": "10314.png"
+  },
+  {
+    "id": "10315",
+    "name": "Mega Crabominable",
+    "sprite": "10315.png"
+  },
+  {
+    "id": "10316",
+    "name": "Mega Golisopod",
+    "sprite": "10316.png"
+  },
+  {
+    "id": "10317",
+    "name": "Mega Magearna",
+    "sprite": "10317.png"
+  },
+  {
+    "id": "10318",
+    "name": "Mega Magearna (Original)",
+    "sprite": "10318.png"
+  },
+  {
+    "id": "10319",
+    "name": "Mega Zeraora",
+    "sprite": "10319.png"
+  },
+  {
+    "id": "10320",
+    "name": "Mega Scovillain",
+    "sprite": "10320.png"
+  },
+  {
+    "id": "10321",
+    "name": "Mega Glimmora",
+    "sprite": "10321.png"
+  },
+  {
+    "id": "10322",
+    "name": "Mega Tatsugiri (Curly)",
+    "sprite": "10322.png"
+  },
+  {
+    "id": "10323",
+    "name": "Mega Tatsugiri (Droopy)",
+    "sprite": "10323.png"
+  },
+  {
+    "id": "10324",
+    "name": "Mega Tatsugiri (Stretchy)",
+    "sprite": "10324.png"
+  },
+  {
+    "id": "10325",
+    "name": "Mega Baxcalibur",
+    "sprite": "10325.png"
+  },
+  {
+    "id": "10326",
+    "name": "Mega Meowstic (F)",
+    "sprite": "10326.png"
   }
 ]
