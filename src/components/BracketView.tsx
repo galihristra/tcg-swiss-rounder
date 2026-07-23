@@ -52,7 +52,7 @@ export default function BracketView({
         <path
           key={`${r}-${i}`}
           d={`M${x1},${y1} L${midX},${y1} L${midX},${y2} L${x2},${y2}`}
-          stroke="#3a3d47"
+          style={{ stroke: 'var(--border)' }}
           strokeWidth="1.5"
           fill="none"
         />,

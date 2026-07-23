@@ -2,7 +2,14 @@ html,
 body {
   margin: 0;
   padding: 0;
+  /* Dark is the default when no theme attribute is set. */
   background: #121316;
+}
+/* Light theme: keep the page backdrop in sync with --bg below so overscroll
+   and the area behind .tk-root's padding stay light. */
+html[data-theme='light'],
+html[data-theme='light'] body {
+  background: #f4f5f7;
 }
 .tk-root {
   --bg: #121316;
@@ -16,12 +23,31 @@ body {
   --win: #4f9d6e;
   --loss: #c1584a;
   --draw: #6e7480;
+  /* Overlay used for row/hover tints; overridden per theme (dark assumes a
+     faint white wash, light a faint black one). */
+  --surface-hover: rgba(255, 255, 255, 0.03);
   background: var(--bg);
   color: var(--text);
   min-height: 100vh;
   font-family: 'Inter', system-ui, sans-serif;
   padding: 24px;
   box-sizing: border-box;
+}
+/* Light palette. Gold/win/loss are darkened so they keep enough contrast as
+   text and borders on white surfaces. */
+html[data-theme='light'] .tk-root {
+  --bg: #f4f5f7;
+  --panel: #ffffff;
+  --card: #ffffff;
+  --border: #e2e4ea;
+  --text: #1a1c20;
+  --muted: #5c606b;
+  --gold: #b7891f;
+  --gold-dim: #caa24a;
+  --win: #2f8a56;
+  --loss: #b3453a;
+  --draw: #6e7480;
+  --surface-hover: rgba(0, 0, 0, 0.05);
 }
 .tk-root * {
   box-sizing: border-box;
@@ -628,6 +654,25 @@ body {
   align-items: center;
   gap: 10px;
   flex-wrap: wrap;
+}
+/* Square icon button (theme toggle). Pairs with `.tk-btn.ghost` for the
+   border/background so it matches the other header controls. */
+.tk-icon-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  padding: 0;
+  color: var(--muted);
+}
+.tk-icon-btn:hover {
+  color: var(--gold);
+  border-color: var(--gold-dim);
+}
+.tk-icon-btn svg {
+  width: 18px;
+  height: 18px;
 }
 .tk-eventname {
   width: 100%;
