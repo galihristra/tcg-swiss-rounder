@@ -47,9 +47,9 @@ export default function PokemonCombobox({
         placeholder={placeholder}
         {...getInputProps()}
       />
-      <ul className="tk-combobox-list" {...getMenuProps()}>
-        {isOpen &&
-          items.map((item, index) => (
+      {isOpen && inputValue.length > 2 && (
+        <ul className="tk-combobox-list" {...getMenuProps()}>
+          {items.map((item, index) => (
             <li
               className={`tk-combobox-option ${
                 highlightedIndex === index ? 'highlighted' : ''
@@ -68,10 +68,11 @@ export default function PokemonCombobox({
               <span>{item.name}</span>
             </li>
           ))}
-        {isOpen && items.length === 0 && inputValue.trim() && (
-          <li className="tk-combobox-empty">No matches</li>
-        )}
-      </ul>
+          {isOpen && items.length === 0 && inputValue.trim() && (
+            <li className="tk-combobox-empty">No matches</li>
+          )}
+        </ul>
+      )}
     </div>
   );
 }
