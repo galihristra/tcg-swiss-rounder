@@ -138,17 +138,42 @@ export default function StandingsTable({
                             </tr>
                           </thead>
                           <tbody>
-                            {r.opponents.map((o, oi) => (
-                              <tr key={`${o.id}-${oi}`}>
-                                <td>{playerMap[o.id]?.name ?? 'Unknown'}</td>
-                                <td className="tk-num">
-                                  {(o.mw * 100).toFixed(1)}
-                                </td>
-                                <td className="tk-num">
-                                  {(o.gw * 100).toFixed(1)}
-                                </td>
-                              </tr>
-                            ))}
+                            {r.opponents.map((o, oi) => {
+                              const opp = playerMap[o.id];
+                              const oppDeck1 = getPokemon(opp?.deckPokemon1);
+                              const oppDeck2 = getPokemon(opp?.deckPokemon2);
+                              return (
+                                <tr key={`${o.id}-${oi}`}>
+                                  <td>
+                                    <span className="tk-deck-sprites">
+                                      {oppDeck1 && (
+                                        <img
+                                          className="tk-deck-sprite-xs"
+                                          src={pokemonSpriteUrl(oppDeck1)}
+                                          alt={oppDeck1.name}
+                                          loading="lazy"
+                                        />
+                                      )}
+                                      {oppDeck2 && (
+                                        <img
+                                          className="tk-deck-sprite-xs"
+                                          src={pokemonSpriteUrl(oppDeck2)}
+                                          alt={oppDeck2.name}
+                                          loading="lazy"
+                                        />
+                                      )}
+                                    </span>
+                                    {opp?.name ?? 'Unknown'}
+                                  </td>
+                                  <td className="tk-num">
+                                    {(o.mw * 100).toFixed(1)}
+                                  </td>
+                                  <td className="tk-num">
+                                    {(o.gw * 100).toFixed(1)}
+                                  </td>
+                                </tr>
+                              );
+                            })}
                           </tbody>
                         </table>
                       )}
