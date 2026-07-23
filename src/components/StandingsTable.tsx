@@ -5,11 +5,14 @@ import { getPokemon, pokemonSpriteUrl } from '../lib/pokemon';
 interface StandingsTableProps {
   rows: StandingRow[];
   playerMap: Record<string, Player>;
+  /** When provided, renders a "Deck" edit button beside each player's name. */
+  onEditDeck?: (playerId: string) => void;
 }
 
 export default function StandingsTable({
   rows,
   playerMap,
+  onEditDeck,
 }: StandingsTableProps) {
   const [showTiebreakers, setShowTiebreakers] = useState(false);
   const [expandedId, setExpandedId] = useState<string | null>(null);
@@ -89,6 +92,17 @@ export default function StandingsTable({
                       )}
                     </span>
                     {r.name}
+                    {onEditDeck && (
+                      <button
+                        className="tk-btn ghost tk-btn--sm tk-standings-deck-btn"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          onEditDeck(r.id);
+                        }}
+                      >
+                        Deck
+                      </button>
+                    )}
                     {showTiebreakers && (
                       <span className="tk-standings-caret">
                         {isExpanded ? ' ▴' : ' ▾'}

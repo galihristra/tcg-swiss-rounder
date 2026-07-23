@@ -184,11 +184,6 @@ body {
   outline: none;
   border-bottom: 1px solid var(--gold);
 }
-.tk-roster-name {
-  flex: 1;
-  color: var(--text);
-  font-size: 14px;
-}
 .tk-x {
   background: none;
   border: none;
@@ -391,6 +386,10 @@ body {
 .tk-standings-caret {
   color: var(--muted);
   font-size: 10px;
+}
+.tk-standings-deck-btn {
+  margin-left: 8px;
+  vertical-align: middle;
 }
 .tk-standings-detail-row td {
   padding: 0 10px 10px;
