@@ -36,6 +36,20 @@ export default function App() {
     setShowCancelConfirm(false);
   };
 
+  // An event is "active" once it's running but not yet finished. On mobile this
+  // flips the layout to lead with pairings/standings and collapses the roster.
+  const eventStarted = (() => {
+    switch (ev.mode) {
+      case 'swiss':
+        return ev.round > 0;
+      case 'single':
+        return ev.singleBracket != null;
+      case 'double':
+        return ev.doubleBracket != null;
+    }
+  })();
+  const eventActive = !ev.eventFinished && eventStarted;
+
   if (ev.loading) {
     return (
       <div className="tk-root">
@@ -92,9 +106,10 @@ export default function App() {
       {view === 'archive' ? (
         <PastEventsView onBack={() => setView('event')} isAdmin={isAdmin} />
       ) : (
-        <div className="tk-layout">
+        <div className={`tk-layout ${eventActive ? 'tk-layout--active' : ''}`}>
           <EventSidebar
             isAdmin={isAdmin}
+            eventActive={eventActive}
             eventName={ev.eventName}
             onEventNameChange={ev.setEventName}
             saveLabel={ev.saveLabel}

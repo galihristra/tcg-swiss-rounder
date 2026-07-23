@@ -90,9 +90,59 @@ body {
   gap: 20px;
   align-items: start;
 }
+/* Roster header toggle — full-width, styled like the plain heading it replaces. */
+.tk-roster-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  /* Carry the heading's bottom spacing here so the h3 can zero its margin
+     and stay vertically centered with the caret. */
+  margin-bottom: 12px;
+  padding: 0;
+  background: none;
+  border: 0;
+  color: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+/* Higher specificity than `.tk-panel h3` so its bottom margin doesn't win
+   here and knock the heading out of alignment with the caret. */
+.tk-panel .tk-roster-toggle h3 {
+  margin: 0;
+}
+.tk-roster-caret {
+  display: none;
+  flex: none;
+  padding: 4px;
+  border-radius: 999px;
+  color: var(--gold);
+  background: rgba(214, 169, 60, 0.14);
+  /* Points right when collapsed; rotates to point down when open. */
+  transform: rotate(-90deg);
+  transition: transform 0.18s ease;
+}
+.tk-roster-caret.is-open {
+  transform: rotate(0deg);
+}
 @media (max-width: 800px) {
   .tk-layout {
     grid-template-columns: 1fr;
+  }
+  /* Active event: lead with pairings/standings, drop the roster below it. */
+  .tk-layout--active > *:nth-child(1) {
+    order: 2;
+  }
+  .tk-layout--active > *:nth-child(2) {
+    order: 1;
+  }
+  /* Collapsed roster shows only its header; desktop always shows the full list. */
+  .tk-panel.is-collapsed .tk-roster-list {
+    display: none;
+  }
+  /* Caret is a mobile-only affordance (desktop roster is always expanded). */
+  .tk-roster-caret {
+    display: inline-flex;
   }
 }
 .tk-panel {
