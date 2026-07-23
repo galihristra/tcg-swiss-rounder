@@ -184,6 +184,11 @@ body {
   outline: none;
   border-bottom: 1px solid var(--gold);
 }
+.tk-roster-name {
+  flex: 1;
+  color: var(--text);
+  font-size: 14px;
+}
 .tk-x {
   background: none;
   border: none;

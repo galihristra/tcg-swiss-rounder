@@ -1,9 +1,11 @@
 import { useEffect, useState } from 'react';
 import { computeStandings } from '../engine/tournament';
-import { listArchivedEvents } from '../lib/eventStore';
+import { listArchivedEvents, saveEvent } from '../lib/eventStore';
 import type { ArchivedEventSummary } from '../lib/eventStore';
+import { getPokemon, pokemonSpriteUrl } from '../lib/pokemon';
 import StandingsTable from './StandingsTable';
 import EventPhotos from './EventPhotos';
+import DeckEditModal from './DeckEditModal';
 
 interface PastEventsViewProps {
   onBack: () => void;
@@ -17,12 +19,59 @@ export default function PastEventsView({
   const [archived, setArchived] = useState<ArchivedEventSummary[]>([]);
   const [viewingArchive, setViewingArchive] =
     useState<ArchivedEventSummary | null>(null);
+  const [editingDeckPlayerId, setEditingDeckPlayerId] = useState<string | null>(
+    null,
+  );
 
   useEffect(() => {
     listArchivedEvents()
       .then(setArchived)
       .catch((e) => console.error('Failed to list events', e));
   }, []);
+
+  const editingDeckPlayer =
+    viewingArchive?.state.players.find((p) => p.id === editingDeckPlayerId) ??
+    null;
+
+  async function handleSaveDeck(
+    deckPokemon1: string | null,
+    deckPokemon2: string | null,
+  ) {
+    if (!viewingArchive || !editingDeckPlayerId) return;
+    const players = viewingArchive.state.players.map((p) =>
+      p.id === editingDeckPlayerId
+        ? {
+            ...p,
+            deckPokemon1: deckPokemon1 ?? undefined,
+            deckPokemon2: deckPokemon2 ?? undefined,
+          }
+        : p,
+    );
+    const updated: ArchivedEventSummary = {
+      ...viewingArchive,
+      state: { ...viewingArchive.state, players },
+    };
+    // Optimistically reflect the change, then persist.
+    setViewingArchive(updated);
+    setArchived((prev) =>
+      prev.map((ev) => (ev.id === updated.id ? updated : ev)),
+    );
+    setEditingDeckPlayerId(null);
+    try {
+      await saveEvent(updated.id, updated.name, updated.state);
+    } catch (e) {
+      console.error('Failed to save deck', e);
+      // Revert to the server's truth if the write failed.
+      listArchivedEvents()
+        .then((rows) => {
+          setArchived(rows);
+          setViewingArchive(
+            (cur) => rows.find((r) => r.id === cur?.id) ?? null,
+          );
+        })
+        .catch((err) => console.error('Failed to reload events', err));
+    }
+  }
 
   return (
     <div className="tk-panel">
@@ -71,6 +120,44 @@ export default function PastEventsView({
               viewingArchive.state.players.map((p) => [p.id, p]),
             )}
           />
+          {isAdmin && viewingArchive.state.players.length > 0 && (
+            <>
+              <h3 className="tk-section-title">Decks</h3>
+              <div className="tk-roster-list">
+                {viewingArchive.state.players.map((p) => {
+                  const deck1 = getPokemon(p.deckPokemon1);
+                  const deck2 = getPokemon(p.deckPokemon2);
+                  return (
+                    <div className="tk-roster-row" key={p.id}>
+                      {deck1 && (
+                        <img
+                          className="tk-deck-sprite-mini"
+                          src={pokemonSpriteUrl(deck1)}
+                          alt={deck1.name}
+                          loading="lazy"
+                        />
+                      )}
+                      {deck2 && (
+                        <img
+                          className="tk-deck-sprite-mini"
+                          src={pokemonSpriteUrl(deck2)}
+                          alt={deck2.name}
+                          loading="lazy"
+                        />
+                      )}
+                      <span className="tk-roster-name">{p.name}</span>
+                      <button
+                        className="tk-btn ghost tk-btn--sm"
+                        onClick={() => setEditingDeckPlayerId(p.id)}
+                      >
+                        Deck
+                      </button>
+                    </div>
+                  );
+                })}
+              </div>
+            </>
+          )}
           <h3 className="tk-section-title">Photos</h3>
           <EventPhotos eventId={viewingArchive.id} isAdmin={isAdmin} />
         </>
@@ -107,6 +194,16 @@ export default function PastEventsView({
             );
           })}
         </div>
+      )}
+      {editingDeckPlayer && viewingArchive && (
+        <DeckEditModal
+          key={editingDeckPlayer.id}
+          open
+          onClose={() => setEditingDeckPlayerId(null)}
+          eventName={viewingArchive.name}
+          player={editingDeckPlayer}
+          onSave={handleSaveDeck}
+        />
       )}
     </div>
   );
