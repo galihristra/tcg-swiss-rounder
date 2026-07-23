@@ -77,7 +77,22 @@ export default function EventSidebar({
         onClick={() => setRosterOpen((o) => !o)}
       >
         <h3>Participants · {players.length}</h3>
-        <span className="tk-roster-caret">{rosterOpen ? '▾' : '▸'}</span>
+        <svg
+          className={`tk-roster-caret ${rosterOpen ? 'is-open' : ''}`}
+          width="18"
+          height="18"
+          viewBox="0 0 16 16"
+          aria-hidden="true"
+        >
+          <path
+            d="M4 6l4 4 4-4"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+        </svg>
       </button>
       <div className="tk-roster-list">
         {players.map((p, i) => {

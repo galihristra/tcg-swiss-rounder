@@ -106,7 +106,7 @@ body {
     display: none;
   }
   .tk-roster-caret {
-    display: inline;
+    display: inline-flex;
   }
 }
 /* Roster header toggle — full-width, styled like the plain heading it replaces. */
@@ -124,8 +124,17 @@ body {
 }
 .tk-roster-caret {
   display: none;
-  color: var(--muted);
-  font-size: 13px;
+  flex: none;
+  padding: 4px;
+  border-radius: 999px;
+  color: var(--gold);
+  background: rgba(214, 169, 60, 0.14);
+  /* Points right when collapsed; rotates to point down when open. */
+  transform: rotate(-90deg);
+  transition: transform 0.18s ease;
+}
+.tk-roster-caret.is-open {
+  transform: rotate(0deg);
 }
 .tk-panel {
   background: var(--panel);
