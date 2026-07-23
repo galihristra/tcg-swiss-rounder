@@ -1,9 +1,10 @@
 import type { ReactNode } from 'react';
+import { useScrollLock } from '../hooks/useScrollLock';
 
 interface ModalProps {
   open: boolean;
   onClose: () => void;
-  title: string;
+  title: ReactNode;
   children: ReactNode;
   className?: string;
 }
@@ -15,6 +16,7 @@ export default function Modal({
   children,
   className,
 }: ModalProps) {
+  useScrollLock(open);
   if (!open) return null;
   return (
     <div className="tk-modal-backdrop" onClick={onClose}>

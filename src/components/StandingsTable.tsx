@@ -1,11 +1,12 @@
-import { Fragment, useState } from 'react';
+import { useState } from 'react';
 import type { Player, StandingRow } from '../engine/tournament';
 import { getPokemon, pokemonSpriteUrl } from '../lib/pokemon';
+import PlayerPerformanceModal from './PlayerPerformanceModal';
 
 interface StandingsTableProps {
   rows: StandingRow[];
   playerMap: Record<string, Player>;
-  /** When provided, renders a "Deck" edit button beside each player's name. */
+  /** When provided, the performance modal offers an "Edit deck" button. */
   onEditDeck?: (playerId: string) => void;
 }
 
@@ -14,42 +15,21 @@ export default function StandingsTable({
   playerMap,
   onEditDeck,
 }: StandingsTableProps) {
-  const [showTiebreakers, setShowTiebreakers] = useState(false);
-  const [expandedId, setExpandedId] = useState<string | null>(null);
+  const [selectedId, setSelectedId] = useState<string | null>(null);
+  const selectedRow = rows.find((r) => r.id === selectedId) ?? null;
 
   return (
     <div className="tk-table-scroll">
-      <div className="tk-standings-toolbar">
-        <button
-          type="button"
-          className="tk-standings-toggle"
-          onClick={() => setShowTiebreakers((v) => !v)}
-        >
-          {showTiebreakers
-            ? 'Hide tiebreakers ▴'
-            : 'Show tiebreakers (OMW% / GW% / OGW%) ▾'}
-        </button>
-      </div>
-      <table
-        className={
-          showTiebreakers
-            ? 'tk-standings'
-            : 'tk-standings tk-standings--compact'
-        }
-      >
+      <table className="tk-standings">
         <thead>
           <tr>
             <th>#</th>
             <th>Player</th>
             <th>Pts</th>
             <th>W-D-L</th>
-            {showTiebreakers && (
-              <>
-                <th>OMW%</th>
-                <th>GW%</th>
-                <th>OGW%</th>
-              </>
-            )}
+            <th className="tk-col-tb">OMW%</th>
+            <th className="tk-col-tb">GW%</th>
+            <th className="tk-col-tb">OGW%</th>
           </tr>
         </thead>
         <tbody>
@@ -57,134 +37,64 @@ export default function StandingsTable({
             const player = playerMap[r.id];
             const deck1 = getPokemon(player?.deckPokemon1);
             const deck2 = getPokemon(player?.deckPokemon2);
-            const isExpanded = showTiebreakers && expandedId === r.id;
             return (
-              <Fragment key={r.id}>
-                <tr
-                  className={
-                    showTiebreakers ? 'tk-standings-row--expandable' : undefined
-                  }
-                  onClick={
-                    showTiebreakers
-                      ? () =>
-                          setExpandedId((cur) => (cur === r.id ? null : r.id))
-                      : undefined
-                  }
-                >
-                  <td className="tk-num">{i + 1}</td>
-                  <td>
-                    <span className="tk-deck-sprites">
-                      {deck1 && (
-                        <img
-                          className="tk-deck-sprite-mini"
-                          src={pokemonSpriteUrl(deck1)}
-                          alt={deck1.name}
-                          loading="lazy"
-                        />
-                      )}
-                      {deck2 && (
-                        <img
-                          className="tk-deck-sprite-mini"
-                          src={pokemonSpriteUrl(deck2)}
-                          alt={deck2.name}
-                          loading="lazy"
-                        />
-                      )}
-                    </span>
-                    {r.name}
-                    {onEditDeck && (
-                      <button
-                        className="tk-btn ghost tk-standings-deck-btn"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          onEditDeck(r.id);
-                        }}
-                      >
-                        Deck
-                      </button>
+              <tr
+                key={r.id}
+                className="tk-standings-row--expandable"
+                onClick={() => setSelectedId(r.id)}
+              >
+                <td className="tk-num">{i + 1}</td>
+                <td>
+                  <span className="tk-deck-sprites">
+                    {deck1 && (
+                      <img
+                        className="tk-deck-sprite-mini"
+                        src={pokemonSpriteUrl(deck1)}
+                        alt={deck1.name}
+                        loading="lazy"
+                      />
                     )}
-                    {showTiebreakers && (
-                      <span className="tk-standings-caret">
-                        {isExpanded ? ' ▴' : ' ▾'}
-                      </span>
+                    {deck2 && (
+                      <img
+                        className="tk-deck-sprite-mini"
+                        src={pokemonSpriteUrl(deck2)}
+                        alt={deck2.name}
+                        loading="lazy"
+                      />
                     )}
-                  </td>
-                  <td className="tk-num">{r.points}</td>
-                  <td className="tk-num">
-                    {r.wins}-{r.draws}-{r.losses}
-                  </td>
-                  {showTiebreakers && (
-                    <>
-                      <td className="tk-num">{(r.omw * 100).toFixed(1)}</td>
-                      <td className="tk-num">{(r.gw * 100).toFixed(1)}</td>
-                      <td className="tk-num">{(r.ogw * 100).toFixed(1)}</td>
-                    </>
-                  )}
-                </tr>
-                {isExpanded && (
-                  <tr className="tk-standings-detail-row">
-                    <td colSpan={7}>
-                      {r.opponents.length === 0 ? (
-                        <div className="tk-standings-detail">
-                          No opponents played yet.
-                        </div>
-                      ) : (
-                        <table className="tk-standings-detail">
-                          <thead>
-                            <tr>
-                              <th>Opponent</th>
-                              <th>Opponent MW%</th>
-                              <th>Opponent GW%</th>
-                            </tr>
-                          </thead>
-                          <tbody>
-                            {r.opponents.map((o, oi) => {
-                              const opp = playerMap[o.id];
-                              const oppDeck1 = getPokemon(opp?.deckPokemon1);
-                              const oppDeck2 = getPokemon(opp?.deckPokemon2);
-                              return (
-                                <tr key={`${o.id}-${oi}`}>
-                                  <td>
-                                    <span className="tk-deck-sprites">
-                                      {oppDeck1 && (
-                                        <img
-                                          className="tk-deck-sprite-xs"
-                                          src={pokemonSpriteUrl(oppDeck1)}
-                                          alt={oppDeck1.name}
-                                          loading="lazy"
-                                        />
-                                      )}
-                                      {oppDeck2 && (
-                                        <img
-                                          className="tk-deck-sprite-xs"
-                                          src={pokemonSpriteUrl(oppDeck2)}
-                                          alt={oppDeck2.name}
-                                          loading="lazy"
-                                        />
-                                      )}
-                                    </span>
-                                    {opp?.name ?? 'Unknown'}
-                                  </td>
-                                  <td className="tk-num">
-                                    {(o.mw * 100).toFixed(1)}
-                                  </td>
-                                  <td className="tk-num">
-                                    {(o.gw * 100).toFixed(1)}
-                                  </td>
-                                </tr>
-                              );
-                            })}
-                          </tbody>
-                        </table>
-                      )}
-                    </td>
-                  </tr>
-                )}
-              </Fragment>
+                  </span>
+                  {r.name}
+                  <span className="tk-standings-caret"> ›</span>
+                </td>
+                <td className="tk-num">{r.points}</td>
+                <td className="tk-num">
+                  {r.wins}-{r.draws}-{r.losses}
+                </td>
+                <td className="tk-num tk-col-tb">{(r.omw * 100).toFixed(1)}</td>
+                <td className="tk-num tk-col-tb">{(r.gw * 100).toFixed(1)}</td>
+                <td className="tk-num tk-col-tb">{(r.ogw * 100).toFixed(1)}</td>
+              </tr>
             );
           })}
         </tbody>
       </table>
+      {selectedRow && (
+        <PlayerPerformanceModal
+          key={selectedRow.id}
+          onClose={() => setSelectedId(null)}
+          row={selectedRow}
+          playerMap={playerMap}
+          onEditDeck={
+            onEditDeck
+              ? () => {
+                  // Hand off to the deck editor so the two modals never stack.
+                  setSelectedId(null);
+                  onEditDeck(selectedRow.id);
+                }
+              : undefined
+          }
+        />
+      )}
     </div>
   );
 }

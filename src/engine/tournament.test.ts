@@ -72,6 +72,54 @@ describe('Swiss pairing', () => {
   );
 });
 
+describe('Standings match history', () => {
+  it('records the round and per-player outcome of every match, byes included', () => {
+    const players = makePlayers(3);
+    const matches: SwissMatch[] = [
+      {
+        p1Id: 'p1',
+        p2Id: 'p2',
+        round: 1,
+        result: 'p1',
+        p1Games: 2,
+        p2Games: 0,
+      },
+      { p1Id: 'p3', round: 1, isBye: true },
+      {
+        p1Id: 'p1',
+        p2Id: 'p3',
+        round: 2,
+        result: 'draw',
+        p1Games: 1,
+        p2Games: 1,
+      },
+      { p1Id: 'p2', round: 2, isBye: true },
+    ];
+    const byId = Object.fromEntries(
+      computeStandings(players, matches).map((r) => [r.id, r]),
+    );
+
+    expect(
+      byId.p1.opponents.map((o) => ({
+        id: o.id,
+        round: o.round,
+        result: o.result,
+      })),
+    ).toEqual([
+      { id: 'p2', round: 1, result: 'W' },
+      { id: 'p3', round: 2, result: 'D' },
+    ]);
+    expect(byId.p1.byeRounds).toEqual([]);
+
+    // The loser sees the mirrored outcome, and a bye is history without an
+    // opponent (so it must not land in the tiebreaker averages).
+    expect(byId.p2.opponents.map((o) => o.result)).toEqual(['L']);
+    expect(byId.p2.byeRounds).toEqual([2]);
+    expect(byId.p3.byeRounds).toEqual([1]);
+    expect(byId.p3.opponents.map((o) => o.id)).toEqual(['p1']);
+  });
+});
+
 describe('Single elimination', () => {
   it.each([2, 3, 4, 5, 6, 7, 8, 13, 16])(
     'produces exactly one valid champion for n=%i',

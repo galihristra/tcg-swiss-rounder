@@ -25,8 +25,15 @@ export interface SwissMatch {
   isBye?: boolean;
 }
 
+/** Result of a match from one player's point of view. */
+export type MatchOutcome = 'W' | 'D' | 'L';
+
 export interface OpponentBreakdown {
   id: string;
+  /** Swiss round this opponent was faced in. */
+  round: number;
+  /** Outcome from the perspective of the player this breakdown belongs to. */
+  result: MatchOutcome;
   mw: number;
   gw: number;
 }
@@ -44,6 +51,8 @@ export interface StandingRow {
   omw: number;
   ogw: number;
   opponents: OpponentBreakdown[];
+  /** Rounds the player sat out with a bye (counted as a win, no opponent). */
+  byeRounds: number[];
 }
 
 export interface SwissPairing {
@@ -145,7 +154,8 @@ interface PlayerStat {
   losses: number;
   gamesWon: number;
   gamesPlayed: number;
-  opponents: string[];
+  opponents: { id: string; round: number; result: MatchOutcome }[];
+  byeRounds: number[];
 }
 
 function computeStandings(
@@ -163,6 +173,7 @@ function computeStandings(
       gamesWon: 0,
       gamesPlayed: 0,
       opponents: [],
+      byeRounds: [],
     };
   });
 
@@ -173,6 +184,7 @@ function computeStandings(
         s.points += MATCH_POINTS.win;
         s.matchesPlayed += 1;
         s.wins += 1;
+        s.byeRounds.push(m.round);
       }
       return;
     }
@@ -183,8 +195,12 @@ function computeStandings(
     if (!s1 || !s2 || !m.result) return;
     s1.matchesPlayed += 1;
     s2.matchesPlayed += 1;
-    s1.opponents.push(p2Id);
-    s2.opponents.push(m.p1Id);
+    const outcome1: MatchOutcome =
+      m.result === 'p1' ? 'W' : m.result === 'p2' ? 'L' : 'D';
+    const outcome2: MatchOutcome =
+      outcome1 === 'W' ? 'L' : outcome1 === 'L' ? 'W' : 'D';
+    s1.opponents.push({ id: p2Id, round: m.round, result: outcome1 });
+    s2.opponents.push({ id: m.p1Id, round: m.round, result: outcome2 });
     s1.gamesWon += m.p1Games || 0;
     s2.gamesWon += m.p2Games || 0;
     const totalGames = (m.p1Games || 0) + (m.p2Games || 0);
@@ -221,10 +237,10 @@ function computeStandings(
     const s = stats[p.id];
     const opp = s.opponents;
     const omw = opp.length
-      ? opp.reduce((sum, oid) => sum + mw(oid), 0) / opp.length
+      ? opp.reduce((sum, o) => sum + mw(o.id), 0) / opp.length
       : MIN_PCT;
     const ogw = opp.length
-      ? opp.reduce((sum, oid) => sum + gw(oid), 0) / opp.length
+      ? opp.reduce((sum, o) => sum + gw(o.id), 0) / opp.length
       : MIN_PCT;
     return {
       id: p.id,
@@ -238,7 +254,12 @@ function computeStandings(
       gw: gw(p.id),
       omw,
       ogw,
-      opponents: opp.map((oid) => ({ id: oid, mw: mw(oid), gw: gw(oid) })),
+      opponents: opp.map((o) => ({
+        ...o,
+        mw: mw(o.id),
+        gw: gw(o.id),
+      })),
+      byeRounds: s.byeRounds,
     };
   });
 

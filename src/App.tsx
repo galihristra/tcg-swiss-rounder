@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useAdminSession } from './hooks/useAdminSession';
+import { useScrollLock } from './hooks/useScrollLock';
 import { useEventState } from './hooks/useEventState';
 import type { Mode } from './lib/eventStore';
 import AdminLogin from './components/AdminLogin';
@@ -30,6 +31,7 @@ export default function App() {
   const editingDeckPlayer = editingDeckPlayerId
     ? (ev.playerMap[editingDeckPlayerId] ?? null)
     : null;
+  useScrollLock(showCancelConfirm);
 
   const confirmCancelEvent = async () => {
     await ev.resetEvent();

@@ -351,32 +351,6 @@ body {
 .tk-standings tr:first-child td {
   color: var(--gold);
 }
-.tk-standings--compact th,
-.tk-standings--compact td {
-  font-size: 16.5px;
-}
-.tk-standings-toolbar {
-  display: flex;
-  justify-content: flex-end;
-  margin-bottom: 4px;
-}
-.tk-standings-toggle {
-  font-family: 'Barlow Condensed', sans-serif;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.03em;
-  font-size: 11px;
-  background: transparent;
-  border: 1px solid var(--border);
-  color: var(--muted);
-  border-radius: 6px;
-  padding: 4px 10px;
-  cursor: pointer;
-}
-.tk-standings-toggle:hover {
-  color: var(--gold);
-  border-color: var(--gold-dim);
-}
 .tk-standings-row--expandable {
   cursor: pointer;
 }
@@ -385,43 +359,7 @@ body {
 }
 .tk-standings-caret {
   color: var(--muted);
-  font-size: 10px;
-}
-.tk-standings-deck-btn {
-  margin-left: 8px;
-  vertical-align: middle;
-}
-.tk-standings-detail-row td {
-  padding: 0 10px 10px;
-  border-bottom: 1px solid var(--border);
-}
-table.tk-standings-detail {
-  width: 100%;
-  border-collapse: collapse;
-  margin-top: 2px;
-}
-table.tk-standings-detail th {
-  text-align: left;
-  font-family: 'Barlow Condensed', sans-serif;
-  text-transform: uppercase;
-  font-size: 10px;
-  letter-spacing: 0.05em;
-  color: var(--muted);
-  padding: 4px 8px;
-}
-table.tk-standings-detail td {
-  padding: 4px 8px;
-  font-size: 12.5px;
-  border-bottom: none;
-}
-table.tk-standings-detail td.tk-num {
-  font-family: 'JetBrains Mono', monospace;
-  color: var(--muted);
-}
-div.tk-standings-detail {
-  padding: 4px 8px;
-  color: var(--muted);
-  font-size: 12.5px;
+  font-size: 13px;
 }
 .tk-bracket-scroll {
   overflow-x: auto;
@@ -909,11 +847,37 @@ div.tk-standings-detail {
   }
   .tk-standings th,
   .tk-standings td {
-    padding: 6px 6px;
-    font-size: 12px;
+    padding: 7px 6px;
+    font-size: 13.5px;
+  }
+  /* Tiebreaker columns don't fit a phone; the per-player performance modal
+     carries the same numbers (plus the round-by-round breakdown). */
+  .tk-standings .tk-col-tb {
+    display: none;
   }
   .tk-deck-slots {
     flex-direction: column;
+  }
+  /* The round history is the main thing being read on a phone, so give it a
+     size closer to body text than to the desktop's dense list. */
+  .tk-perf-round {
+    padding: 6px 10px;
+  }
+  .tk-perf-round-num {
+    font-size: 15px;
+  }
+  .tk-perf-round-name {
+    font-size: 16px;
+  }
+  .tk-perf-round-name .tk-deck-sprite-xs {
+    width: 28px;
+    height: 28px;
+  }
+  .tk-perf-round-tb {
+    font-size: 12.5px;
+  }
+  .tk-perf-round-result {
+    font-size: 23px;
   }
 }
 
@@ -982,6 +946,121 @@ div.tk-standings-detail {
 .tk-deck-sprites {
   margin-right: 10px;
 }
+/* ===================== Player performance modal ===================== */
+.tk-modal--perf {
+  width: 460px;
+  max-width: calc(100vw - 24px);
+  max-height: calc(100vh - 48px);
+  overflow-y: auto;
+}
+.tk-perf-title {
+  display: inline-flex;
+  align-items: center;
+}
+.tk-perf-stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 6px;
+}
+.tk-perf-stat {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 8px 6px;
+  text-align: center;
+}
+.tk-perf-stat-label {
+  font-family: 'Barlow Condensed', sans-serif;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-size: 10px;
+  color: var(--muted);
+}
+.tk-perf-stat-value {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 14px;
+}
+.tk-perf-edit {
+  width: 100%;
+  margin-top: 12px;
+}
+.tk-perf-heading {
+  font-family: 'Barlow Condensed', sans-serif;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-size: 12px;
+  color: var(--muted);
+  margin: 16px 0 8px;
+}
+.tk-perf-empty {
+  color: var(--muted);
+  font-size: 13px;
+}
+.tk-perf-rounds {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.tk-perf-round {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 4px 10px;
+  border-radius: 8px;
+  border-left: 3px solid var(--draw);
+  background: rgba(110, 116, 128, 0.12);
+}
+.tk-perf-round--W {
+  border-left-color: var(--win);
+  background: rgba(79, 157, 110, 0.14);
+}
+.tk-perf-round--L {
+  border-left-color: var(--loss);
+  background: rgba(193, 88, 74, 0.14);
+}
+.tk-perf-round-num {
+  flex: none;
+  width: 20px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 14px;
+  color: var(--muted);
+}
+.tk-perf-round-opp {
+  flex: 1;
+  min-width: 0;
+}
+.tk-perf-round-name {
+  display: flex;
+  align-items: center;
+  font-size: 15px;
+}
+.tk-perf-round-tb {
+  display: block;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  color: var(--muted);
+}
+.tk-perf-round-result {
+  flex: none;
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 700;
+  font-size: 18px;
+  color: var(--draw);
+}
+.tk-perf-round--W .tk-perf-round-result {
+  color: var(--win);
+}
+.tk-perf-round--L .tk-perf-round-result {
+  color: var(--loss);
+  margin-right: 2px;
+}
+
 .tk-combobox {
   flex: 1;
   min-width: 0;

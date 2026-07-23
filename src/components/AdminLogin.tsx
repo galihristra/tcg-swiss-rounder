@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useScrollLock } from '../hooks/useScrollLock';
 import { signInWithPassword, signOut } from '../lib/auth';
 import { Session } from '@supabase/supabase-js';
 
@@ -15,6 +16,7 @@ export default function AdminLogin({ isAdmin, userSession }: AdminLoginProps) {
   const [password, setPassword] = useState('');
   const [status, setStatus] = useState<Status>('idle');
   const [errorMsg, setErrorMsg] = useState('');
+  useScrollLock(open);
 
   const close = () => {
     setOpen(false);
