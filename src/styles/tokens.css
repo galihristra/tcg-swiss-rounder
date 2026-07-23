@@ -96,12 +96,18 @@ body {
   align-items: center;
   justify-content: space-between;
   width: 100%;
+  /* Carry the heading's bottom spacing here so the h3 can zero its margin
+     and stay vertically centered with the caret. */
+  margin-bottom: 12px;
   padding: 0;
   background: none;
   border: 0;
   color: inherit;
   text-align: left;
   cursor: pointer;
+}
+.tk-roster-toggle h3 {
+  margin: 0;
 }
 .tk-roster-caret {
   display: none;
