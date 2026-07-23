@@ -38,13 +38,17 @@ export default function App() {
 
   // An event is "active" once it's running but not yet finished. On mobile this
   // flips the layout to lead with pairings/standings and collapses the roster.
-  const eventActive =
-    !ev.eventFinished &&
-    (ev.mode === 'swiss'
-      ? ev.round > 0
-      : ev.mode === 'single'
-        ? ev.singleBracket != null
-        : ev.doubleBracket != null);
+  const eventStarted = (() => {
+    switch (ev.mode) {
+      case 'swiss':
+        return ev.round > 0;
+      case 'single':
+        return ev.singleBracket != null;
+      case 'double':
+        return ev.doubleBracket != null;
+    }
+  })();
+  const eventActive = !ev.eventFinished && eventStarted;
 
   if (ev.loading) {
     return (
