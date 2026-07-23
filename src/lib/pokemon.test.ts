@@ -32,6 +32,14 @@ describe('filterPokemon', () => {
     expect(filterPokemon('pecharunt').map((r) => r.id)).toEqual(['1025']);
     expect(filterPokemon('bulbasaur').map((r) => r.id)).toEqual(['1']);
   });
+
+  it('includes Mega Evolutions', () => {
+    const results = filterPokemon('mega charizard');
+    expect(results.map((r) => r.name)).toEqual(
+      expect.arrayContaining(['Mega Charizard X', 'Mega Charizard Y']),
+    );
+    expect(filterPokemon('mega zeraora').map((r) => r.id)).toEqual(['10319']);
+  });
 });
 
 describe('getPokemon', () => {
