@@ -387,6 +387,10 @@ body {
   color: var(--muted);
   font-size: 10px;
 }
+.tk-standings-deck-btn {
+  margin-left: 8px;
+  vertical-align: middle;
+}
 .tk-standings-detail-row td {
   padding: 0 10px 10px;
   border-bottom: 1px solid var(--border);

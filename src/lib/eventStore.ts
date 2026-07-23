@@ -29,6 +29,7 @@ export interface EventRecord {
 export interface ArchivedEventSummary {
   id: string;
   name: string;
+  created_at: string;
   updated_at: string;
   state: EventState;
 }
@@ -123,13 +124,16 @@ export async function archiveAndCreate(
 export async function listArchivedEvents(): Promise<ArchivedEventSummary[]> {
   const { data, error } = await supabase
     .from(TABLE)
-    .select('id, name, updated_at, state')
+    .select('id, name, created_at, updated_at, state')
     .eq('status', 'archived')
-    .order('updated_at', { ascending: false });
+    // Order by when the event was created, so editing an archived event
+    // (e.g. fixing a deck) doesn't reshuffle the list.
+    .order('created_at', { ascending: false });
   if (error) throw error;
   return (data ?? []).map((r) => ({
     id: r.id,
     name: r.name,
+    created_at: r.created_at,
     updated_at: r.updated_at,
     state: normalizeState(r.state),
   }));
