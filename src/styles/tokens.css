@@ -106,7 +106,9 @@ body {
   text-align: left;
   cursor: pointer;
 }
-.tk-roster-toggle h3 {
+/* Higher specificity than `.tk-panel h3` so its bottom margin doesn't win
+   here and knock the heading out of alignment with the caret. */
+.tk-panel .tk-roster-toggle h3 {
   margin: 0;
 }
 .tk-roster-caret {
