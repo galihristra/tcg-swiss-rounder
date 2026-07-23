@@ -961,7 +961,8 @@ div.tk-standings-detail {
   width: 100%;
 }
 .tk-deck-sprite,
-.tk-deck-sprite-mini {
+.tk-deck-sprite-mini,
+.tk-deck-sprite-xs {
   image-rendering: pixelated;
   object-fit: contain;
   flex-shrink: 0;
@@ -969,6 +970,12 @@ div.tk-standings-detail {
 .tk-deck-sprite-mini {
   width: 40px;
   height: 40px;
+  vertical-align: middle;
+  margin-right: 2px;
+}
+.tk-deck-sprite-xs {
+  width: 24px;
+  height: 24px;
   vertical-align: middle;
   margin-right: 2px;
 }
