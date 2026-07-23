@@ -94,7 +94,7 @@ export default function StandingsTable({
                     {r.name}
                     {onEditDeck && (
                       <button
-                        className="tk-btn ghost tk-btn--sm tk-standings-deck-btn"
+                        className="tk-btn ghost tk-standings-deck-btn"
                         onClick={(e) => {
                           e.stopPropagation();
                           onEditDeck(r.id);
