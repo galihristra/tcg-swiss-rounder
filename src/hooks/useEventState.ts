@@ -22,6 +22,9 @@ import type { Mode, EventState, EventRecord } from '../lib/eventStore';
 
 type SaveStatus = 'saved' | 'saving' | 'error';
 
+/** Everything `useEventState` exposes — passed down to the current-event page. */
+export type EventStateApi = ReturnType<typeof useEventState>;
+
 /** Owns the active event's data, persistence (load/autosave/archive), and all mutating actions. */
 export function useEventState() {
   const [players, setPlayers] = useState<Player[]>([]);

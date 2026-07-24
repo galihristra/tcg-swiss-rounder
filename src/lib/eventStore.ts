@@ -34,6 +34,11 @@ export interface ArchivedEventSummary {
   state: EventState;
 }
 
+/** An event fetched by id — same shape as the archive list, plus its status. */
+export interface EventDetail extends ArchivedEventSummary {
+  status: 'active' | 'archived';
+}
+
 export interface EventPhoto {
   id: string;
   eventId: string;
@@ -137,6 +142,30 @@ export async function listArchivedEvents(): Promise<ArchivedEventSummary[]> {
     updated_at: r.updated_at,
     state: normalizeState(r.state),
   }));
+}
+
+/** Load one event by id (any status), for shareable `/event/:id` links. */
+export async function loadEventById(id: string): Promise<EventDetail | null> {
+  const { data, error } = await supabase
+    .from(TABLE)
+    .select('id, name, created_at, updated_at, state, status')
+    .eq('id', id)
+    .maybeSingle();
+  // A malformed uuid is rejected by Postgres (22P02) rather than matching
+  // nothing — treat it the same as "no such event".
+  if (error) {
+    if (error.code === '22P02') return null;
+    throw error;
+  }
+  if (!data) return null;
+  return {
+    id: data.id,
+    name: data.name,
+    created_at: data.created_at,
+    updated_at: data.updated_at,
+    state: normalizeState(data.state),
+    status: data.status,
+  };
 }
 
 function photoPublicUrl(path: string): string {

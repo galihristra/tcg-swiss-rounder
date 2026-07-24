@@ -259,6 +259,12 @@ html[data-theme='light'] .tk-root {
   border: 1px solid var(--border);
   color: var(--text);
 }
+/* Navigation links styled as buttons (<a> needs the underline removed and the
+   button's box model). */
+a.tk-btn {
+  display: inline-block;
+  text-decoration: none;
+}
 .tk-roundbar {
   display: flex;
   align-items: center;
@@ -269,6 +275,12 @@ html[data-theme='light'] .tk-root {
   font-family: 'Barlow Condensed', sans-serif;
   font-size: 20px;
   text-transform: uppercase;
+}
+/* Right-hand group in a round bar (e.g. Copy link + All events). */
+.tk-roundbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 .tk-roundlabel .tk-gold {
   color: var(--gold);
@@ -670,6 +682,12 @@ html[data-theme='light'] .tk-root {
   color: var(--gold);
   border-color: var(--gold-dim);
 }
+/* Momentary confirmation after copying (icon swaps to a check mark). */
+.tk-icon-btn.is-copied,
+.tk-icon-btn.is-copied:hover {
+  color: var(--win);
+  border-color: var(--win);
+}
 .tk-icon-btn svg {
   width: 18px;
   height: 18px;
@@ -705,7 +723,10 @@ html[data-theme='light'] .tk-root {
   gap: 8px;
   margin-top: 12px;
 }
+/* An <a> to `/event/:id` — block so the whole row stays clickable. */
 .tk-archive-item {
+  display: block;
+  text-decoration: none;
   text-align: left;
   background: var(--card);
   border: 1px solid var(--border);
